@@ -13,12 +13,16 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import PeopleIcon from "@mui/icons-material/People";
 import DescriptionIcon from "@mui/icons-material/Description";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import Dashboard from "./Dashboard";
+import Profile from "./Profile";
+import Note from "./Note";
+import Upload from "./Upload";
 
 // Student Pages
-import Dashboard from "../student_pages/Dashboard";
-import Profile from "../student_pages/Profile";
-import Note from "../student_pages/Note";
-import Upload from "../student_pages/Upload";
+// import Dashboard from "../student_pages/Dashboard";
+// import Profile from "../student_pages/Profile";
+// import Note from "../student_pages/Note";
+// import Upload from "../student_pages/Upload";
 
 const StudentDashboard = () => {
   const [activePage, setActivePage] = useState("dashboard");
@@ -136,12 +140,17 @@ const StudentDashboard = () => {
               />
             </ListItemIcon>
 
+
             <ListItemText
               primary="Dashboard"
-              primaryTypographyProps={{
-                fontWeight: 600,
+              slotProps={{
+                primary: {
+                  fontWeight: 600,
+                },
               }}
             />
+
+
           </ListItemButton>
 
           {/* Profile */}
@@ -163,8 +172,10 @@ const StudentDashboard = () => {
 
             <ListItemText
               primary="Profile"
-              primaryTypographyProps={{
-                fontWeight: 600,
+              slotProps={{
+                primary: {
+                  fontWeight: 600,
+                },
               }}
             />
           </ListItemButton>
@@ -188,8 +199,10 @@ const StudentDashboard = () => {
 
             <ListItemText
               primary="Upload Notes"
-              primaryTypographyProps={{
-                fontWeight: 600,
+              slotProps={{
+                primary: {
+                  fontWeight: 600,
+                },
               }}
             />
           </ListItemButton>
@@ -213,8 +226,10 @@ const StudentDashboard = () => {
 
             <ListItemText
               primary="Note Management"
-              primaryTypographyProps={{
-                fontWeight: 600,
+              slotProps={{
+                primary: {
+                  fontWeight: 600,
+                },
               }}
             />
           </ListItemButton>
