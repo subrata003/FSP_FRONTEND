@@ -1,122 +1,545 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+// // // // // import React from "react";
+// // // // // import { Routes, Route, Navigate } from "react-router-dom";
 
+// // // // // import StudentDashboard from "./components/StudentDashboard";
+// // // // // import Upload from "./student_pages/Upload";
+// // // // // import Profile from "./student_pages/Profile";
+
+// // // // // const App = () => {
+// // // // //   return (
+// // // // //     <Routes>
+// // // // //         <Route
+// // // // //           path="/student-dashboard"
+// // // // //           element={<StudentDashboard />}
+// // // // //         />
+
+// // // // //       {/* <Route
+// // // // //         path="/upload"
+// // // // //         element={<Upload />}
+// // // // //       /> */}
+// // // // //         <Route
+// // // // //         path="/student-dashboard/notes"
+// // // // //         element={<Upload/>}
+// // // // //       />
+
+// // // // //       <Route
+// // // // //         path="/student-dashboard/profile"
+// // // // //         element={<Profile />}
+// // // // //       />
+
+// // // // //       {/* Default */}
+// // // // //       <Route
+// // // // //         path="/"
+// // // // //         element={<Navigate to="/student-dashboard" replace />}
+// // // // //       />
+
+// // // // //       {/* Unknown URL */}
+// // // // //       <Route
+// // // // //         path="*"
+// // // // //         element={<Navigate to="/student-dashboard" replace />}
+// // // // //       />
+// // // // //     </Routes>
+// // // // //   );
+// // // // // };
+
+// // // // // export default App;
+// // // // import React from "react";
+// // // // import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+// // // // import Loginpage from "./components/Loginpage";
+// // // // import StudentDashboard from "./components/StudentDashboard";
+// // // // import AdminDashboard from "./components/AdminDashboard"
+
+// // // // const App = () => {
+// // // //   return (
+// // // //     <BrowserRouter>
+// // // //       <Routes>
+// // // //         <Route path="/" element={<Loginpage />} />
+
+// // // //         <Route
+// // // //           path="/student"
+// // // //           element={<StudentDashboard />}
+// // // //         />
+
+// // // //         <Route
+// // // //           path="/admin"
+// // // //           element={<AdminDashboard />}
+// // // //         />
+// // // //       </Routes>
+// // // //     </BrowserRouter>
+// // // //   );
+// // // // };
+
+// // // // export default App;
+// // // import React from "react";
+// // // import {
+// // //   BrowserRouter,
+// // //   Routes,
+// // //   Route,
+// // //   Navigate,
+// // // } from "react-router-dom";
+
+// // // import Loginpage from "./components/Loginpage";
+// // // import StudentDashboard from "./components/StudentDashboard";
+// // // import AdminDashboard from "./components/AdminDashboard";
+
+// // // import Upload from "./student_pages/Upload";
+// // // import Profile from "./student_pages/Profile";
+
+// // // // ------------------------------------
+// // // // Protected Route
+// // // // ------------------------------------
+// // // const ProtectedRoute = ({ children, role }) => {
+// // //   const loggedUser = JSON.parse(
+// // //     localStorage.getItem("loggedUser")
+// // //   );
+
+// // //   // Not logged in
+// // //   if (!loggedUser) {
+// // //     return <Navigate to="/" replace />;
+// // //   }
+
+// // //   // Wrong role
+// // //   if (loggedUser.role !== role) {
+// // //     if (loggedUser.role === "admin") {
+// // //       return <Navigate to="/admin" replace />;
+// // //     }
+
+// // //     return <Navigate to="/student" replace />;
+// // //   }
+
+// // //   return children;
+// // // };
+
+// // // // ------------------------------------
+// // // // App
+// // // // ------------------------------------
+// // // const App = () => {
+// // //   return (
+// // //     <BrowserRouter>
+// // //       <Routes>
+
+// // //         {/* =========================
+// // //             LOGIN
+// // //         ========================= */}
+// // //         <Route path="/" element={<Loginpagea />} />
+
+
+// // //         {/* =========================
+// // //             ADMIN ROUTES
+// // //         ========================= */}
+// // //         <Route
+// // //           path="/admin"
+// // //           element={
+// // //             <ProtectedRoute role="admin">
+// // //               <AdminDashboard />
+// // //             </ProtectedRoute>
+// // //           }
+// // //         />
+
+
+// // //         {/* =========================
+// // //             STUDENT DASHBOARD
+// // //         ========================= */}
+// // //         <Route
+// // //           path="/student"
+// // //           element={
+// // //             <ProtectedRoute role="student">
+// // //               <StudentDashboard />
+// // //             </ProtectedRoute>
+// // //           }
+// // //         />
+
+
+// // //         {/* =========================
+// // //             STUDENT NOTES / UPLOAD
+// // //         ========================= */}
+// // //         <Route
+// // //           path="/student-dashboard/notes"
+// // //           element={
+// // //             <ProtectedRoute role="student">
+// // //               <Upload />
+// // //             </ProtectedRoute>
+// // //           }
+// // //         />
+
+
+// // //         {/* =========================
+// // //             STUDENT PROFILE
+// // //         ========================= */}
+// // //         <Route
+// // //           path="/student-dashboard/profile"
+// // //           element={
+// // //             <ProtectedRoute role="student">
+// // //               <Profile />
+// // //             </ProtectedRoute>
+// // //           }
+// // //         />
+
+
+// // //         {/* =========================
+// // //             UNKNOWN URL
+// // //         ========================= */}
+// // //         <Route
+// // //           path="*"
+// // //           element={<Navigate to="/" replace />}
+// // //         />
+
+// // //       </Routes>
+// // //     </BrowserRouter>
+// // //   );
+// // // };
+
+// // // export default App;
+// // import React from "react";
+// // import {
+// //   Routes,
+// //   Route,
+// //   Navigate,
+// // } from "react-router-dom";
+
+// // import Loginpage from "./components/Loginpage";
+// // import StudentDashboard from "./components/StudentDashboard";
+// // import AdminDashboard from "./components/AdminDashboard";
+
+// // import Upload from "./student_pages/Upload";
+// // import Profile from "./student_pages/Profile";
+
+// // // ==========================================
+// // // PROTECTED ROUTE
+// // // ==========================================
+// // const ProtectedRoute = ({ children, role }) => {
+// //   const loggedUser = JSON.parse(
+// //     localStorage.getItem("loggedUser")
+// //   );
+
+// //   // Not logged in
+// //   if (!loggedUser) {
+// //     return <Navigate to="/" replace />;
+// //   }
+
+// //   // Wrong category
+// //   if (loggedUser.role !== role) {
+// //     if (loggedUser.role === "admin") {
+// //       return <Navigate to="/admin" replace />;
+// //     }
+
+// //     return <Navigate to="/student" replace />;
+// //   }
+
+// //   return children;
+// // };
+
+// // const App = () => {
+// //   return (
+// //     <Routes>
+
+// //       {/* ================================
+// //           LOGIN
+// //       ================================= */}
+// //       <Route
+// //         path="/"
+// //         element={<Loginpage />}
+// //       />
+
+// //       {/* ================================
+// //           ADMIN
+// //       ================================= */}
+// //       <Route
+// //         path="/admin"
+// //         element={
+// //           <ProtectedRoute role="admin">
+// //             <AdminDashboard />
+// //           </ProtectedRoute>
+// //         }
+// //       />
+
+// //       {/* ================================
+// //           STUDENT DASHBOARD
+// //       ================================= */}
+// //       <Route
+// //         path="/student"
+// //         element={
+// //           <ProtectedRoute role="student">
+// //             <StudentDashboard />
+// //           </ProtectedRoute>
+// //         }
+// //       />
+
+// //       {/* ================================
+// //           STUDENT NOTES
+// //       ================================= */}
+// //       <Route
+// //         path="/student-dashboard/notes"
+// //         element={
+// //           <ProtectedRoute role="student">
+// //             <Upload />
+// //           </ProtectedRoute>
+// //         }
+// //       />
+
+// //       {/* ================================
+// //           STUDENT PROFILE
+// //       ================================= */}
+// //       <Route
+// //         path="/student-dashboard/profile"
+// //         element={
+// //           <ProtectedRoute role="student">
+// //             <Profile />
+// //           </ProtectedRoute>
+// //         }
+// //       />
+
+// //       {/* ================================
+// //           UNKNOWN URL
+// //       ================================= */}
+// //       <Route
+// //         path="*"
+// //         element={
+// //           <Navigate to="/" replace />
+// //         }
+// //       />
+
+// //     </Routes>
+// //   );
+// // };
+
+// // export default App;
+// import React from "react";
+
+// import {
+//   Routes,
+//   Route,
+//   Navigate,
+// } from "react-router-dom";
+
+// import Loginpage from "./components/Loginpage";
+// import StudentDashboard from "./components/StudentDashboard";
+// import AdminDashboard from "./components/AdminDashboard";
+
+// import Upload from "./student_pages/Upload";
+// import Profile from "./student_pages/Profile";
+
+// // ==========================================
+// // PROTECTED ROUTE
+// // ==========================================
+// const ProtectedRoute = ({ children, role }) => {
+//   const loggedUser = JSON.parse(
+//     localStorage.getItem("loggedUser") || "null"
+//   );
+
+//   // User is not logged in
+//   if (!loggedUser) {
+//     return <Navigate to="/" replace />;
+//   }
+
+//   // User has wrong role
+//   if (loggedUser.role !== role) {
+//     if (loggedUser.role === "admin") {
+//       return <Navigate to="/admin" replace />;
+//     }
+
+//     if (loggedUser.role === "student") {
+//       return <Navigate to="/student" replace />;
+//     }
+
+//     return <Navigate to="/" replace />;
+//   }
+
+//   return children;
+// };
+
+// // ==========================================
+// // APP
+// // ==========================================
+// const App = () => {
+//   return (
+//     <Routes>
+//       {/* =====================================
+//           LOGIN
+//       ====================================== */}
+//       <Route
+//         path="/"
+//         element={<Loginpage />}
+//       />
+
+//       {/* =====================================
+//           ADMIN DASHBOARD
+//       ====================================== */}
+//       <Route
+//         path="/admin"
+//         element={
+//           <ProtectedRoute role="admin">
+//             <AdminDashboard />
+//           </ProtectedRoute>
+//         }
+//       />
+
+//       {/* =====================================
+//           STUDENT DASHBOARD
+//       ====================================== */}
+//       <Route
+//         path="/student"
+//         element={
+//           <ProtectedRoute role="student">
+//             <StudentDashboard />
+//           </ProtectedRoute>
+//         }
+//       />
+
+//       {/* =====================================
+//           STUDENT UPLOAD / NOTES
+//       ====================================== */}
+//       <Route
+//         path="/student-dashboard/notes"
+//         element={
+//           <ProtectedRoute role="student">
+//             <Upload />
+//           </ProtectedRoute>
+//         }
+//       />
+
+//       {/* =====================================
+//           STUDENT PROFILE
+//       ====================================== */}
+//       <Route
+//         path="/student-dashboard/profile"
+//         element={
+//           <ProtectedRoute role="student">
+//             <Profile />
+//           </ProtectedRoute>
+//         }
+//       />
+
+//       {/* =====================================
+//           UNKNOWN URL
+//       ====================================== */}
+//       <Route
+//         path="*"
+//         element={
+//           <Navigate to="/" replace />
+//         }
+//       />
+//     </Routes>
+//   );
+// };
+
+// export default App;
+import React from "react";
+
+import {
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+
+import Loginpage from "./components/Loginpage";
+import StudentDashboard from "./components/StudentDashboard";
+import AdminDashboard from "./components/AdminDashboard";
+
+import Upload from "./student_pages/Upload";
+import Profile from "./student_pages/Profile";
+
+// ==========================================
+// PROTECTED ROUTE
+// ==========================================
+const ProtectedRoute = ({ children, role }) => {
+  const loggedUser = JSON.parse(
+    localStorage.getItem("loggedUser") || "null"
+  );
+
+  if (!loggedUser) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (role && loggedUser.role !== role) {
+    if (loggedUser.role === "admin") {
+      return <Navigate to="/admin" replace />;
+    }
+
+    if (loggedUser.role === "student") {
+      return <Navigate to="/student" replace />;
+    }
+
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+};
+
+const App = () => {
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <Routes>
 
-      <div className="ticks"></div>
+      {/* LOGIN */}
+      <Route
+        path="/"
+        element={<Loginpage />}
+      />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+      {/* ADMIN DASHBOARD */}
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute role="admin">
+            <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
-}
+      {/* STUDENT DASHBOARD */}
+      <Route
+        path="/student"
+        element={
+          <ProtectedRoute role="student">
+            <StudentDashboard />
+          </ProtectedRoute>
+        }
+      />
 
-export default App
+      {/* STUDENT NOTES */}
+      <Route
+        path="/student-dashboard/notes"
+        element={
+          <ProtectedRoute role="student">
+            <Upload />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* ==================================
+          PROFILE FOR BOTH ADMIN + STUDENT
+      =================================== */}
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* OLD STUDENT PROFILE URL */}
+      <Route
+        path="/student-dashboard/profile"
+        element={
+          <ProtectedRoute role="student">
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* UNKNOWN URL */}
+      <Route
+        path="*"
+        element={
+          <Navigate to="/" replace />
+        }
+      />
+
+    </Routes>
+  );
+};
+
+export default App;
