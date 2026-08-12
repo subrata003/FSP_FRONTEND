@@ -52,6 +52,7 @@ const Dashboard = () => {
   const [semester, setSemester] = useState("");
 
   const [bookmarked, setBookmarked] = useState([]);
+  const [anchorEl, setAnchorEl] = useState(null);
 
   // =====================================================
   // ONLY APPROVED NOTES
@@ -80,6 +81,7 @@ const Dashboard = () => {
       }
 
       const data = await response.json();
+      
 
       console.log("Approved Notes API Response:", data);
 
@@ -354,6 +356,21 @@ const Dashboard = () => {
     setSemester("");
   };
 
+  const handleUserMenu = (event) => {
+  setAnchorEl(event.currentTarget);
+};
+
+const handleCloseUserMenu = () => {
+  setAnchorEl(null);
+};
+
+const handleLogout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+
+  window.location.href = "/";
+};
+
   // =====================================================
   // UI
   // =====================================================
@@ -369,7 +386,7 @@ const Dashboard = () => {
           md: 4,
         },
       }}
-    >
+    > 
       <Container maxWidth="xl">
 
         {/* =================================================
@@ -460,33 +477,30 @@ const Dashboard = () => {
 
         <Grid
           container
-          spacing={3}
+          spacing={2}
           sx={{ mb: 4 }}
         >
           {[
             {
               title: "Approved Notes",
               value: approvedNotes.length,
-              icon: (
-                <DescriptionIcon />
-              ),
+              icon: <DescriptionIcon />,
+              iconBg: "#eff6ff",
+              iconColor: "#2563eb",
             },
             {
               title: "Total Downloads",
               value: totalDownloads,
-              icon: (
-                <DownloadIcon />
-              ),
+              icon: <DownloadIcon />,
+              iconBg: "#ecfdf5",
+              iconColor: "#059669",
             },
             {
               title: "Contributors",
               value: activeContributors,
               icon: <PersonIcon />,
-            },
-            {
-              title: "My Bookmarks",
-              value: bookmarked.length,
-              icon: <BookmarkIcon />,
+              iconBg: "#fff7ed",
+              iconColor: "#ea580c",
             },
           ].map((stat) => (
             <Grid
@@ -494,69 +508,86 @@ const Dashboard = () => {
               size={{
                 xs: 12,
                 sm: 6,
-                md: 3,
+                md: 4,
               }}
             >
               <Card
                 elevation={0}
                 sx={{
-                  borderRadius: 4,
-                  border:
-                    "1px solid #e2e8f0",
-                  transition:
-                    "all .25s",
+                  borderRadius: 3,
+                  border: "1px solid #e5e7eb",
+                  background: "#ffffff",
+                  transition: "all 0.25s ease",
 
                   "&:hover": {
-                    transform:
-                      "translateY(-5px)",
+                    transform: "translateY(-3px)",
                     boxShadow:
-                      "0 12px 30px rgba(15,76,129,.12)",
+                      "0 8px 24px rgba(15,23,42,0.08)",
+                    borderColor: "#dbeafe",
                   },
                 }}
               >
-                <CardContent>
+                <CardContent
+                  sx={{
+                    p: 2,
+                    "&:last-child": {
+                      pb: 2,
+                    },
+                  }}
+                >
                   <Stack
                     direction="row"
-                    justifyContent="space-between"
                     alignItems="center"
+                    spacing={1.5}
                   >
-                    <Box>
+                    {/* SMALL ICON */}
+                    <Box
+                      sx={{
+                        width: 38,
+                        height: 38,
+                        minWidth: 38,
+                        borderRadius: 2,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor: stat.iconBg,
+                        color: stat.iconColor,
+
+                        "& svg": {
+                          fontSize: 20,
+                        },
+                      }}
+                    >
+                      {stat.icon}
+                    </Box>
+
+                    {/* CONTENT */}
+                    <Box
+                      sx={{
+                        flex: 1,
+                        minWidth: 0,
+                      }}
+                    >
                       <Typography
+                        variant="body2"
                         color="text.secondary"
                         fontWeight={600}
+                        noWrap
                       >
                         {stat.title}
                       </Typography>
 
                       <Typography
-                        variant="h4"
+                        variant="h5"
                         fontWeight={800}
                         sx={{
-                          mt: 1,
-                          color: "#0f4c81",
+                          mt: 0.2,
+                          color: "#172033",
+                          lineHeight: 1.2,
                         }}
                       >
                         {stat.value}
                       </Typography>
-                    </Box>
-
-                    <Box
-                      sx={{
-                        width: 52,
-                        height: 52,
-                        borderRadius: 3,
-                        display: "flex",
-                        alignItems:
-                          "center",
-                        justifyContent:
-                          "center",
-                        bgcolor:
-                          "#e0f2fe",
-                        color:
-                          "#0284c7",
-                      }}
-                    >
-                      {stat.icon}
                     </Box>
                   </Stack>
                 </CardContent>
@@ -1106,282 +1137,363 @@ const Dashboard = () => {
         ================================================= */}
 
         {filteredNotes.length > 0 ? (
-          <Grid
-            container
-            spacing={3}
+          <Grid container spacing={3}>
+  {filteredNotes.map((note) => (
+    <Grid
+      key={note.id}
+      size={{
+        xs: 12,
+        sm: 6,
+        lg: 4,
+      }}
+    >
+      <Card
+        elevation={0}
+        sx={{
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          borderRadius: 4,
+          overflow: "hidden",
+          border: "1px solid #E2E8F0",
+          backgroundColor: "#FFFFFF",
+
+          transition:
+            "transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease",
+
+          "&:hover": {
+            transform: "translateY(-5px)",
+            borderColor: "#BFDBFE",
+            boxShadow:
+              "0 18px 40px rgba(15,23,42,0.10)",
+          },
+        }}
+      >
+        <CardContent
+          sx={{
+            p: 3,
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+          }}
+        >
+          {/* =================================
+              TOP SECTION
+          ================================= */}
+
+          <Stack
+            direction="row"
+            alignItems="flex-start"
+            justifyContent="space-between"
           >
-            {filteredNotes.map(
-              (note) => (
-                <Grid
-                  key={note.id}
-                  size={{
-                    xs: 12,
-                    sm: 6,
-                    lg: 4,
-                  }}
-                >
-                  <Card
-                    elevation={0}
-                    sx={{
-                      height: "100%",
-                      borderRadius: 4,
-                      border:
-                        "1px solid #e2e8f0",
-                      transition:
-                        "all .25s",
+            {/* NOTE ICON */}
 
-                      "&:hover": {
-                        transform:
-                          "translateY(-6px)",
-                        boxShadow:
-                          "0 15px 35px rgba(15,76,129,.12)",
-                        borderColor:
-                          "#bae6fd",
-                      },
-                    }}
-                  >
-                    <CardContent
-                      sx={{ p: 3 }}
-                    >
-                      {/* CARD TOP */}
+            <Box
+              sx={{
+                width: 48,
+                height: 48,
+                borderRadius: 3,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
 
-                      <Stack
-                        direction="row"
-                        justifyContent="space-between"
-                      >
-                        <Avatar
-                          sx={{
-                            bgcolor:
-                              "#e0f2fe",
-                            color:
-                              "#0369a1",
-                          }}
-                        >
-                          <DescriptionIcon />
-                        </Avatar>
+                background:
+                  "linear-gradient(135deg,#DBEAFE,#EDE9FE)",
 
-                        <IconButton
-                          onClick={() =>
-                            toggleBookmark(
-                              note.id
-                            )
-                          }
-                          sx={{
-                            color:
-                              bookmarked.includes(
-                                note.id
-                              )
-                                ? "#f59e0b"
-                                : "#94a3b8",
-                          }}
-                        >
-                          {bookmarked.includes(
-                            note.id
-                          ) ? (
-                            <BookmarkIcon />
-                          ) : (
-                            <BookmarkBorderIcon />
-                          )}
-                        </IconButton>
-                      </Stack>
+                color: "#4F46E5",
 
-                      {/* TITLE */}
+                boxShadow:
+                  "0 6px 14px rgba(79,70,229,0.12)",
+              }}
+            >
+              <DescriptionIcon
+                sx={{ fontSize: 24 }}
+              />
+            </Box>
 
-                      <Typography
-                        variant="h6"
-                        fontWeight={800}
-                        sx={{ mt: 2 }}
-                        noWrap
-                      >
-                        {note.title}
-                      </Typography>
+            {/* STATUS */}
 
-                      {/* DESCRIPTION */}
+           
+          </Stack>
 
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{
-                          mt: 1,
-                          minHeight: 42,
-                        }}
-                      >
-                        {
-                          note.description
-                        }
-                      </Typography>
+          {/* =================================
+              TITLE
+          ================================= */}
 
-                      {/* TAGS */}
+          <Typography
+            sx={{
+              mt: 2,
+              fontSize: "1.08rem",
+              fontWeight: 800,
+              color: "#0F172A",
+              lineHeight: 1.4,
+              display: "-webkit-box",
+              WebkitLineClamp: 1,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+            }}
+          >
+            {note.title}
+          </Typography>
 
-                      <Stack
-                        direction="row"
-                        spacing={1}
-                        sx={{
-                          mt: 2,
-                          flexWrap:
-                            "wrap",
-                          gap: 1,
-                        }}
-                      >
-                        <Chip
-                          size="small"
-                          icon={
-                            <SchoolIcon />
-                          }
-                          label={
-                            note.branch
-                          }
-                        />
+          {/* PDF NAME */}
 
-                        <Chip
-                          size="small"
-                          label={`Sem ${note.semester}`}
-                        />
+          <Typography
+            variant="caption"
+            sx={{
+              mt: 0.5,
+              color: "#94A3B8",
+              display: "block",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {note.pdfName}
+          </Typography>
 
-                        <Chip
-                          size="small"
-                          label={
-                            note.subject
-                          }
-                        />
-                      </Stack>
+          {/* =================================
+              DESCRIPTION
+          ================================= */}
 
-                      <Divider
-                        sx={{ my: 2 }}
-                      />
+          <Typography
+            variant="body2"
+            sx={{
+              mt: 1.5,
+              color: "#64748B",
+              lineHeight: 1.65,
 
-                      {/* UPLOADER */}
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
 
-                      <Stack
-                        direction="row"
-                        alignItems="center"
-                        spacing={1.5}
-                      >
-                        <Avatar
-                          sx={{
-                            width: 34,
-                            height: 34,
-                            bgcolor:
-                              "#0f4c81",
-                            fontSize: 14,
-                          }}
-                        >
-                          {note.uploadedBy?.name
-                            ?.charAt(0)
-                            .toUpperCase()}
-                        </Avatar>
+              minHeight: 46,
+            }}
+          >
+            {note.description}
+          </Typography>
 
-                        <Box>
-                          <Typography
-                            variant="body2"
-                            fontWeight={700}
-                          >
-                            {
-                              note
-                                .uploadedBy
-                                ?.name
-                            }
-                          </Typography>
+          {/* =================================
+              TAGS
+          ================================= */}
 
-                          <Typography
-                            variant="caption"
-                            color="text.secondary"
-                          >
-                            Student
-                            contributor
-                          </Typography>
-                        </Box>
+          <Stack
+            direction="row"
+            spacing={1}
+            flexWrap="wrap"
+            useFlexGap
+            sx={{ mt: 2 }}
+          >
+            {/* BRANCH */}
 
-                        <Box
-                          sx={{
-                            ml: "auto",
-                            display:
-                              "flex",
-                            alignItems:
-                              "center",
-                            gap: 0.5,
-                          }}
-                        >
-                          <DownloadIcon
-                            sx={{
-                              fontSize: 16,
-                              color:
-                                "#64748b",
-                            }}
-                          />
+            <Chip
+              size="small"
+              icon={<SchoolIcon />}
+              label={note.branch}
+              sx={{
+                borderRadius: 2,
+                backgroundColor: "#EFF6FF",
+                color: "#2563EB",
+                fontWeight: 700,
 
-                          <Typography
-                            variant="caption"
-                            color="text.secondary"
-                          >
-                            {
-                              note.downloads
-                            }
-                          </Typography>
-                        </Box>
-                      </Stack>
+                "& .MuiChip-icon": {
+                  color: "#2563EB",
+                },
+              }}
+            />
 
-                      {/* ACTIONS */}
+            {/* SEMESTER */}
 
-                      <Stack
-                        direction="row"
-                        spacing={1}
-                        sx={{ mt: 3 }}
-                      >
-                        <Button
-                          fullWidth
-                          variant="outlined"
-                          startIcon={
-                            <VisibilityIcon />
-                          }
-                          onClick={() =>
-                            handleView(
-                              note
-                            )
-                          }
-                          sx={{
-                            borderRadius: 2,
-                            textTransform:
-                              "none",
-                            fontWeight: 700,
-                          }}
-                        >
-                          View
-                        </Button>
+            <Chip
+              size="small"
+              label={`Semester ${note.semester}`}
+              sx={{
+                borderRadius: 2,
+                backgroundColor: "#F5F3FF",
+                color: "#7C3AED",
+                fontWeight: 700,
+              }}
+            />
 
-                        <Button
-                          fullWidth
-                          variant="contained"
-                          startIcon={
-                            <DownloadIcon />
-                          }
-                          onClick={() =>
-                            handleDownload(
-                              note
-                            )
-                          }
-                          sx={{
-                            borderRadius: 2,
-                            textTransform:
-                              "none",
-                            fontWeight: 700,
-                            bgcolor:
-                              "#087fba",
-                            "&:hover": {
-                              bgcolor:
-                                "#075985",
-                            },
-                          }}
-                        >
-                          Download
-                        </Button>
-                      </Stack>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              )
-            )}
-          </Grid>
+            {/* SUBJECT */}
+
+            <Chip
+              size="small"
+              label={note.subject}
+              sx={{
+                borderRadius: 2,
+                backgroundColor: "#ECFDF5",
+                color: "#059669",
+                fontWeight: 700,
+              }}
+            />
+          </Stack>
+
+          <Divider sx={{ my: 2.5 }} />
+
+          {/* =================================
+              CONTRIBUTOR
+          ================================= */}
+
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing={1.3}
+          >
+            {/* AVATAR */}
+
+            <Avatar
+              sx={{
+                width: 34,
+                height: 34,
+                fontSize: 13,
+                fontWeight: 700,
+
+                background:
+                  "linear-gradient(135deg,#2563EB,#7C3AED)",
+              }}
+            >
+              {note.uploadedBy?.name
+                ?.charAt(0)
+                ?.toUpperCase() || "U"}
+            </Avatar>
+
+            {/* NAME */}
+
+            <Box
+              sx={{
+                minWidth: 0,
+              }}
+            >
+              <Typography
+                variant="body2"
+                sx={{
+                  fontWeight: 700,
+                  color: "#334155",
+                  lineHeight: 1.2,
+                }}
+                noWrap
+              >
+                {note.uploadedBy?.name ||
+                  "Unknown User"}
+              </Typography>
+
+              <Typography
+                variant="caption"
+                sx={{
+                  color: "#94A3B8",
+                }}
+              >
+                Student contributor
+              </Typography>
+            </Box>
+
+            {/* DOWNLOADS */}
+
+            <Stack
+              direction="row"
+              alignItems="center"
+              spacing={0.5}
+              sx={{ ml: "auto" }}
+            >
+              <DownloadIcon
+                sx={{
+                  fontSize: 17,
+                  color: "#64748B",
+                }}
+              />
+
+              <Typography
+                variant="caption"
+                sx={{
+                  color: "#64748B",
+                  fontWeight: 600,
+                }}
+              >
+                {note.downloads || 0}
+              </Typography>
+            </Stack>
+          </Stack>
+
+          {/* =================================
+              ACTION BUTTONS
+          ================================= */}
+
+          <Stack
+            direction="row"
+            spacing={1.5}
+            sx={{
+              mt: "auto",
+              pt: 3,
+            }}
+          >
+            {/* VIEW */}
+
+            <Button
+              fullWidth
+              variant="outlined"
+              startIcon={<VisibilityIcon />}
+              onClick={() =>
+                handleView(note)
+              }
+              sx={{
+                height: 42,
+                borderRadius: 2.5,
+                textTransform: "none",
+                fontWeight: 700,
+
+                borderColor: "#CBD5E1",
+                color: "#334155",
+
+                "&:hover": {
+                  borderColor: "#2563EB",
+                  backgroundColor: "#EFF6FF",
+                  color: "#2563EB",
+                },
+              }}
+            >
+              View
+            </Button>
+
+            {/* DOWNLOAD */}
+
+            <Button
+              fullWidth
+              variant="contained"
+              startIcon={<DownloadIcon />}
+              onClick={() =>
+                handleDownload(note)
+              }
+              sx={{
+                height: 42,
+                borderRadius: 2.5,
+                textTransform: "none",
+                fontWeight: 700,
+
+                background:
+                  "linear-gradient(135deg,#2563EB,#4F46E5)",
+
+                boxShadow:
+                  "0 6px 14px rgba(37,99,235,0.20)",
+
+                "&:hover": {
+                  background:
+                    "linear-gradient(135deg,#1D4ED8,#4338CA)",
+
+                  boxShadow:
+                    "0 8px 18px rgba(37,99,235,0.28)",
+                },
+              }}
+            >
+              Download
+            </Button>
+          </Stack>
+        </CardContent>
+      </Card>
+    </Grid>
+  ))}
+</Grid>
         ) : (
           /* =================================================
              EMPTY STATE
