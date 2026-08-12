@@ -31,14 +31,11 @@ const Note = () => {
 
   const [search, setSearch] = useState("");
 
-  const [department, setDepartment] =
-    useState("");
+  const [branch, setBranch] = useState("");
+  const [semester, setSemester] = useState("");
 
-  const [semester, setSemester] =
-    useState("");
 
-  
-//GET ALL UPLOADED NOTES
+  //GET ALL UPLOADED NOTES
 
 
   useEffect(() => {
@@ -57,145 +54,134 @@ const Note = () => {
     };
   }, []);
   // api callll this filed
-  const loadNotes = () => {
-    const savedNotes =
-      localStorage.getItem(
-        "uploadedNotes"
-      );
-
-    if (savedNotes) {
-      try {
-        setNotes(
-          JSON.parse(savedNotes)
-        );
-      } catch (error) {
-        console.error(
-          "Error loading notes:",
-          error
-        );
-      }
-    } else {
-      setNotes([]);
-    }
-  };
-
- 
-  // FILTER NOTES
- 
-
-  const filteredNotes = notes.filter(
-    (note) => {
-      const text =
-        search.toLowerCase();
-
-      const searchMatch =
-        note.title
-          ?.toLowerCase()
-          .includes(text) ||
-        note.description
-          ?.toLowerCase()
-          .includes(text) ||
-        note.subject
-          ?.toLowerCase()
-          .includes(text) ||
-        note.department
-          ?.toLowerCase()
-          .includes(text) ||
-        note.semester
-          ?.toLowerCase()
-          .includes(text) ||
-        note.fileName
-          ?.toLowerCase()
-          .includes(text);
-
-      const departmentMatch =
-        department === "" ||
-        note.department ===
-          department;
-
-      const semesterMatch =
-        semester === "" ||
-        note.semester === semester;
-
-      return (
-        searchMatch &&
-        departmentMatch &&
-        semesterMatch
-      );
-    }
-  );
-
-  
-  // VIEW FILE
-  
-
-  const handleView = (note) => {
-    if (!note.fileData) {
-      alert(
-        "File preview is not available."
-      );
-      return;
-    }
-
+  const loadNotes = async () => {
     try {
-      const byteCharacters =
-        atob(note.fileData);
+      const token = localStorage.getItem("token");
 
-      const byteNumbers =
-        new Array(
-          byteCharacters.length
-        );
-
-      for (
-        let i = 0;
-        i <
-        byteCharacters.length;
-        i++
-      ) {
-        byteNumbers[i] =
-          byteCharacters.charCodeAt(
-            i
-          );
-      }
-
-      const byteArray =
-        new Uint8Array(
-          byteNumbers
-        );
-
-      const blob = new Blob(
-        [byteArray],
+      const response = await fetch(
+        "http://localhost:8080/api/notes/my-notes",
         {
-          type:
-            note.fileType ||
-            "application/pdf",
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
-      const url =
-        URL.createObjectURL(
-          blob
+      if (!response.ok) {
+        throw new Error(
+          `Failed to load notes: ${response.status}`
         );
+      }
 
-      window.open(
-        url,
-        "_blank"
+      const data = await response.json();
+
+      console.log("My Notes API Response:", data);
+
+      // API returns:
+      // {
+      //   id,
+      //   name,
+      //   email,
+      //   role,
+      //   notes: [...]
+      // }
+
+      setNotes(
+        Array.isArray(data.notes)
+          ? data.notes
+          : []
       );
+
     } catch (error) {
       console.error(
-        "View error:",
+        "Error loading notes:",
         error
       );
 
-      alert(
-        "Unable to open document."
+      setNotes([]);
+    }
+  };
+  useEffect(() => {
+    loadNotes();
+  }, []);
+
+  // FILTER NOTES
+
+  const filteredNotes = notes.filter((note) => {
+    const text = search.toLowerCase().trim();
+
+    const searchMatch =
+      note.title?.toLowerCase().includes(text) ||
+      note.description?.toLowerCase().includes(text) ||
+      note.subject?.toLowerCase().includes(text) ||
+      note.branch?.toLowerCase().includes(text) ||
+      String(note.semester)
+        .toLowerCase()
+        .includes(text) ||
+      note.pdfName?.toLowerCase().includes(text);
+
+    const branchMatch =
+      branch === "" ||
+      note.branch === branch;
+
+    const semesterMatch =
+      semester === "" ||
+      String(note.semester) === String(semester);
+
+    return (
+      searchMatch &&
+      branchMatch &&
+      semesterMatch
+    );
+  });
+
+
+  // VIEW FILE
+
+
+  const handleView = async (note) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(
+        `http://localhost:8080/api/notes/file/${note.id}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to load PDF: ${response.status}`
+        );
+      }
+
+      const blob = await response.blob();
+
+      const pdfUrl = URL.createObjectURL(blob);
+
+      window.open(pdfUrl, "_blank");
+
+      // Don't revoke immediately because the new tab
+      // still needs the URL.
+      setTimeout(() => {
+        URL.revokeObjectURL(pdfUrl);
+      }, 60000);
+
+    } catch (error) {
+      console.error("View PDF error:", error);
+
+      alert("Unable to open PDF.");
     }
   };
 
- 
+
   // DOWNLOAD FILE
- 
+
   const handleDownload = (
     note
   ) => {
@@ -274,11 +260,11 @@ const Note = () => {
         notes.map((item) =>
           item.id === note.id
             ? {
-                ...item,
-                downloads:
-                  (item.downloads ||
-                    0) + 1,
-              }
+              ...item,
+              downloads:
+                (item.downloads ||
+                  0) + 1,
+            }
             : item
         );
 
@@ -562,10 +548,10 @@ const Note = () => {
               <TextField
                 select
                 fullWidth
-                label="Department"
-                value={department}
+                label="branch"
+                value={branch}
                 onChange={(event) =>
-                  setDepartment(
+                  setBranch(
                     event.target.value
                   )
                 }
@@ -908,39 +894,39 @@ const Note = () => {
 
         {filteredNotes.length ===
           0 && (
-          <Paper
-            sx={{
-              p: 6,
-              mt: 3,
-              textAlign:
-                "center",
-              borderRadius: 3,
-            }}
-          >
-            <FolderIcon
+            <Paper
               sx={{
-                fontSize: 60,
-                color:
-                  "text.secondary",
+                p: 6,
+                mt: 3,
+                textAlign:
+                  "center",
+                borderRadius: 3,
               }}
-            />
-
-            <Typography
-              variant="h6"
-              fontWeight={700}
             >
-              No documents found
-            </Typography>
+              <FolderIcon
+                sx={{
+                  fontSize: 60,
+                  color:
+                    "text.secondary",
+                }}
+              />
 
-            <Typography
-              color="text.secondary"
-            >
-              Upload a document
-              or change your
-              search.
-            </Typography>
-          </Paper>
-        )}
+              <Typography
+                variant="h6"
+                fontWeight={700}
+              >
+                No documents found
+              </Typography>
+
+              <Typography
+                color="text.secondary"
+              >
+                Upload a document
+                or change your
+                search.
+              </Typography>
+            </Paper>
+          )}
 
       </Container>
     </Box>

@@ -114,7 +114,8 @@ const Upload = () => {
 
 
 
-const handleUpload = async () => {
+ const handleUpload = async () => {
+
   // ============================
   // VALIDATION
   // ============================
@@ -127,85 +128,154 @@ const handleUpload = async () => {
     !formData.subject.trim() ||
     !formData.file
   ) {
-    alert("Please fill all fields and select a file.");
+    alert("Please fill all fields and select a PDF file.");
+    return;
+  }
+
+  // ============================
+  // PDF CHECK
+  // ============================
+
+  if (formData.file.type !== "application/pdf") {
+    alert("Only PDF files are allowed.");
     return;
   }
 
   try {
+
     // ============================
     // CREATE FORMDATA
     // ============================
 
     const data = new FormData();
 
-    data.append("title", formData.title.trim());
+    data.append(
+      "title",
+      formData.title.trim()
+    );
+
     data.append(
       "description",
       formData.description.trim()
     );
-    data.append("branch", formData.branch);
-    data.append("semester", formData.semester);
-    data.append("subject", formData.subject.trim());
-    data.append("file", formData.file);
 
-    // Check data
+    data.append(
+      "subject",
+      formData.subject.trim()
+    );
+
+    data.append(
+      "semester",
+      String(formData.semester)
+    );
+
+    data.append(
+      "branch",
+      formData.branch
+    );
+
+    data.append(
+      "file",
+      formData.file
+    );
+
+    // ============================
+    // DEBUG
+    // ============================
+
     for (const [key, value] of data.entries()) {
       console.log(key, value);
+    }
+
+    // ============================
+    // GET JWT TOKEN
+    // ============================
+
+    const token = localStorage.getItem("token");
+
+    console.log("TOKEN:", token);
+
+    if (!token) {
+      alert("Please login again.");
+      return;
     }
 
     // ============================
     // API CALL
     // ============================
 
-    // const response = await fetch(
-    //   "http://localhost:8080/api/notes/upload",
-    //   {
-    //     method: "POST",
-    //     body: data,
-    //   }
-    // );
+    const response = await fetch(
+      "http://localhost:8080/api/notes/upload",
+      {
+        method: "POST",
+
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+
+        body: data,
+      }
+    );
 
     // ============================
-    // CHECK RESPONSE
+    // RESPONSE
     // ============================
 
-    // if (!response.ok) {
-    //   throw new Error(
-    //     `Upload failed: ${response.status}`
-    //   );
-    // }
+    const responseText = await response.text();
+
+    console.log(
+      "Status:",
+      response.status
+    );
+
+    console.log(
+      "Response:",
+      responseText
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `Upload failed: ${response.status} - ${responseText}`
+      );
+    }
 
     // ============================
-    // GET SAVED NOTE
+    // SUCCESS
     // ============================
 
-    // const savedNote = await response.json();
+    const savedNote = JSON.parse(responseText);
 
-    // console.log("Saved Note:", savedNote);
+    console.log(
+      "Saved Note:",
+      savedNote
+    );
 
-    // ============================
-    // UPDATE UI
-    // ============================
+    // Add uploaded note to UI
+    setNotes((previousNotes) => [
+      savedNote,
+      ...previousNotes,
+    ]);
 
-    // setNotes((previousNotes) => [
-    //   savedNote,
-    //   ...previousNotes,
-    // ]);
-
-    // ============================
-    // RESET
-    // ============================
-
+    // Reset
     resetForm();
 
     setOpenUpload(false);
 
-    alert("Document uploaded successfully!");
+    alert(
+      "Document uploaded successfully!"
+    );
 
   } catch (error) {
-    console.error("Upload error:", error);
 
-    alert("Unable to upload document.");
+    console.error(
+      "Upload error:",
+      error
+    );
+
+    alert(
+      error.message ||
+      "Unable to upload document."
+    );
   }
 };
 

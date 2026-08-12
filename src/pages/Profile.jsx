@@ -1,154 +1,3 @@
-// import React, { useEffect, useState } from "react";
-// import {
-//   Avatar,
-//   Box,
-//   Card,
-//   CardContent,
-//   Container,
-//   Divider,
-//   Typography,
-// } from "@mui/material";
-
-// const Profile = () => {
-//   const [user, setUser] = useState(null);
-
-//   useEffect(() => {
-//     const loggedInUser = localStorage.getItem("loggedInUser");
-
-//     if (loggedInUser) {
-//       try {
-//         setUser(JSON.parse(loggedInUser));
-//       } catch (error) {
-//         console.error("Invalid loggedInUser:", error);
-//       }
-//     }
-//   }, []);
-
-//   if (!user) {
-//     return (
-//       <Container sx={{ py: 5 }}>
-//         <Typography>
-//           No user is currently logged in.
-//         </Typography>
-//       </Container>
-//     );
-//   }
-
-//   return (
-//     <Container maxWidth="md" sx={{ py: 5 }}>
-//       <Card
-//         elevation={0}
-//         sx={{
-//           border: "1px solid #e5e9ed",
-//           borderRadius: 3,
-//         }}
-//       >
-//         <CardContent sx={{ p: 4 }}>
-//           {/* Profile Header */}
-//           <Box
-//             sx={{
-//               display: "flex",
-//               alignItems: "center",
-//               gap: 2,
-//               mb: 3,
-//             }}
-//           >
-//             <Avatar
-//               sx={{
-//                 width: 75,
-//                 height: 75,
-//                 bgcolor: "#0796f5",
-//                 fontSize: 30,
-//                 fontWeight: 700,
-//               }}
-//             >
-//               {user.name?.charAt(0)?.toUpperCase()}
-//             </Avatar>
-
-//             <Box>
-//               <Typography variant="h5" fontWeight={800}>
-//                 {user.name}
-//               </Typography>
-
-//               <Typography color="text.secondary">
-//                 {user.role === "admin" ? "Administrator" : "Student"}
-//               </Typography>
-//             </Box>
-//           </Box>
-
-//           <Divider sx={{ mb: 3 }} />
-
-//           {/* Details */}
-//           <Typography variant="h6" fontWeight={800} mb={2}>
-//             Personal Information
-//           </Typography>
-
-//           <Box
-//             sx={{
-//               display: "grid",
-//               gridTemplateColumns: {
-//                 xs: "1fr",
-//                 sm: "1fr 1fr",
-//               },
-//               gap: 2,
-//             }}
-//           >
-//             <InfoItem
-//               label="Full Name"
-//               value={user.name}
-//             />
-
-//             <InfoItem
-//               label="Email"
-//               value={user.email}
-//             />
-
-//             <InfoItem
-//               label="Roll Number"
-//               value={user.rollNumber}
-//             />
-
-//             <InfoItem
-//               label="Department"
-//               value={user.department}
-//             />
-
-//             <InfoItem
-//               label="Role"
-//               value={user.role}
-//             />
-//           </Box>
-//         </CardContent>
-//       </Card>
-//     </Container>
-//   );
-// };
-
-// const InfoItem = ({ label, value }) => {
-//   return (
-//     <Box
-//       sx={{
-//         p: 2,
-//         bgcolor: "#f7f9fb",
-//         borderRadius: 2,
-//       }}
-//     >
-//       <Typography
-//         variant="caption"
-//         color="text.secondary"
-//         fontWeight={600}
-//       >
-//         {label}
-//       </Typography>
-
-//       <Typography fontWeight={700} sx={{ mt: 0.5 }}>
-//         {value || "N/A"}
-//       </Typography>
-//     </Box>
-//   );
-// };
-
-// export default Profile;
 import React from "react";
 import {
   Avatar,
@@ -177,6 +26,8 @@ import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const navigate = useNavigate();
+   const token = localStorage.getItem("token");
+  // console.log("token is : ",token);
 
   // Get currently logged-in user
   const loggedUser = JSON.parse(
@@ -222,7 +73,8 @@ const Profile = () => {
 
   // Logout
   const handleLogout = () => {
-    localStorage.removeItem("loggedUser");
+ 
+    localStorage.removeItem("token");
     navigate("/");
   };
 
