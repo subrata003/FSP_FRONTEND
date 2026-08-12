@@ -12,6 +12,10 @@ import {
   TableRow,
   Button,
   Chip,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -69,40 +73,31 @@ const NoteManagement = () => {
 
 
   // ==========================================
-  // API - Fetch All Notes
-  // Currently commented
+  // Filter State
   // ==========================================
 
-  /*
-  const fetchNotes = async () => {
-    try {
+  const [selectedBranch, setSelectedBranch] = useState("");
 
-      const response = await fetch(
-        "http://localhost:8080/api/notes"
-      );
+  const [selectedSemester, setSelectedSemester] = useState("");
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch notes");
-      }
 
-      const data = await response.json();
+  // ==========================================
+  // Filter Notes
+  // ==========================================
 
-      setNotes(data);
+  const filteredNotes = notes.filter((note) => {
 
-    } catch (error) {
+    const branchMatch =
+      selectedBranch === "" ||
+      note.branch === selectedBranch;
 
-      console.error(
-        "Error fetching notes:",
-        error
-      );
+    const semesterMatch =
+      selectedSemester === "" ||
+      note.semester === selectedSemester;
 
-    }
-  };
+    return branchMatch && semesterMatch;
 
-  useEffect(() => {
-    fetchNotes();
-  }, []);
-  */
+  });
 
 
   // ==========================================
@@ -127,58 +122,13 @@ const NoteManagement = () => {
       previousNotes.map((note) =>
         note.id === id
           ? {
-            ...note,
-            status: "APPROVED",
-          }
+              ...note,
+              status: "APPROVED",
+            }
           : note
       )
     );
 
-
-    /*
-    // ==========================================
-    // API - Approve Note
-    // ==========================================
-
-    try {
-
-      const response = await fetch(
-        `http://localhost:8080/api/notes/${id}/approve`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(
-          "Failed to approve note"
-        );
-      }
-
-      // Update UI
-      setNotes((previousNotes) =>
-        previousNotes.map((note) =>
-          note.id === id
-            ? {
-                ...note,
-                status: "APPROVED",
-              }
-            : note
-        )
-      );
-
-    } catch (error) {
-
-      console.error(
-        "Error approving note:",
-        error
-      );
-
-    }
-    */
   };
 
 
@@ -196,7 +146,6 @@ const NoteManagement = () => {
       return;
     }
 
-
     // ==========================================
     // Dummy Reject
     // Remove note from list
@@ -208,43 +157,6 @@ const NoteManagement = () => {
       )
     );
 
-
-    /*
-    // ==========================================
-    // API - Reject/Delete Note
-    // ==========================================
-
-    try {
-
-      const response = await fetch(
-        `http://localhost:8080/api/notes/${id}`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(
-          "Failed to reject note"
-        );
-      }
-
-      // Remove note from UI
-      setNotes((previousNotes) =>
-        previousNotes.filter(
-          (note) => note.id !== id
-        )
-      );
-
-    } catch (error) {
-
-      console.error(
-        "Error rejecting note:",
-        error
-      );
-
-    }
-    */
   };
 
 
@@ -255,19 +167,31 @@ const NoteManagement = () => {
   const handleViewPdf = (pdfUrl) => {
 
     if (pdfUrl && pdfUrl !== "#") {
+
       window.open(
         pdfUrl,
         "_blank",
         "noopener,noreferrer"
       );
+
     } else {
-      alert("PDF is not available in dummy data.");
+
+      alert(
+        "PDF is not available in dummy data."
+      );
+
     }
+
   };
 
 
   return (
-    <Box sx={{ p: 3 }}>
+
+    <Box
+      sx={{
+        p: 3,
+      }}
+    >
 
       {/* ==========================================
           Page Header
@@ -285,8 +209,128 @@ const NoteManagement = () => {
 
 
       {/* ==========================================
+          Search / Filter Section
+      ========================================== */}
+
+      <Box
+        sx={{
+          display: "flex",
+          gap: 2,
+          mb: 3,
+          flexWrap: "wrap",
+        }}
+      >
+
+        {/* ==========================================
+            Branch Dropdown
+        ========================================== */}
+
+        <FormControl
+          size="small"
+          sx={{
+            minWidth: 220,
+          }}
+        >
+
+          <InputLabel>
+            Branch
+          </InputLabel>
+
+          <Select
+            value={selectedBranch}
+            label="Branch"
+            onChange={(event) =>
+              setSelectedBranch(
+                event.target.value
+              )
+            }
+          >
+
+            <MenuItem value="">
+              All Branches
+            </MenuItem>
+
+            <MenuItem value="MCA">
+              MCA
+            </MenuItem>
+
+            <MenuItem value="BCA">
+              BCA
+            </MenuItem>
+
+            <MenuItem value="B.Tech">
+              B.Tech
+            </MenuItem>
+
+          </Select>
+
+        </FormControl>
+
+
+        {/* ==========================================
+            Semester Dropdown
+        ========================================== */}
+
+        <FormControl
+          size="small"
+          sx={{
+            minWidth: 220,
+          }}
+        >
+
+          <InputLabel>
+            Semester
+          </InputLabel>
+
+          <Select
+            value={selectedSemester}
+            label="Semester"
+            onChange={(event) =>
+              setSelectedSemester(
+                event.target.value
+              )
+            }
+          >
+
+            <MenuItem value="">
+              All Semesters
+            </MenuItem>
+
+            <MenuItem value="1st Semester">
+              1st Semester
+            </MenuItem>
+
+            <MenuItem value="2nd Semester">
+              2nd Semester
+            </MenuItem>
+
+            <MenuItem value="3rd Semester">
+              3rd Semester
+            </MenuItem>
+
+            <MenuItem value="4th Semester">
+              4th Semester
+            </MenuItem>
+
+            <MenuItem value="5th Semester">
+              5th Semester
+            </MenuItem>
+
+            <MenuItem value="6th Semester">
+              6th Semester
+            </MenuItem>
+
+          </Select>
+
+        </FormControl>
+
+      </Box>
+
+
+      {/* ==========================================
           Notes Table
       ========================================== */}
+
       <TableContainer
         component={Paper}
         sx={{
@@ -358,9 +402,9 @@ const NoteManagement = () => {
 
           <TableBody>
 
-            {notes.length > 0 ? (
+            {filteredNotes.length > 0 ? (
 
-              notes.map((note) => (
+              filteredNotes.map((note) => (
 
                 <TableRow
                   key={note.id}
@@ -448,8 +492,7 @@ const NoteManagement = () => {
                       sx={{
                         display: "flex",
                         gap: 1,
-                        justifyContent:
-                          "center",
+                        justifyContent: "center",
                       }}
                     >
 
@@ -528,4 +571,3 @@ const NoteManagement = () => {
 };
 
 export default NoteManagement;
-

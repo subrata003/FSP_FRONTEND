@@ -11,9 +11,10 @@ import {
 import PeopleIcon from "@mui/icons-material/People";
 import DescriptionIcon from "@mui/icons-material/Description";
 import DownloadIcon from "@mui/icons-material/Download";
+import PendingActionsIcon from "@mui/icons-material/PendingActions";
 
 import { BarChart } from "@mui/x-charts/BarChart";
-
+import { PieChart } from "@mui/x-charts/PieChart";
 
 const Dashboard = () => {
 
@@ -25,6 +26,7 @@ const Dashboard = () => {
     totalUsers: 0,
     totalNotes: 0,
     totalDownloads: 0,
+    totalPendingNotes: 0,
   });
 
 
@@ -41,11 +43,21 @@ const Dashboard = () => {
       totalUsers: 120,
       totalNotes: 250,
       totalDownloads: 1540,
+      totalPendingNotes: 45,
     };
 
     setDashboardData(sampleData);
 
   }, []);
+
+
+  // ==========================================
+  // Active Notes
+  // ==========================================
+
+  const totalActiveNotes =
+    dashboardData.totalNotes -
+    dashboardData.totalPendingNotes;
 
 
   // ==========================================
@@ -63,7 +75,7 @@ const Dashboard = () => {
     },
 
     {
-      title: "Total Notes",
+      title: "Total Active Notes",
       value: dashboardData.totalNotes,
       icon: <DescriptionIcon />,
       color: "#7C3AED",
@@ -78,6 +90,14 @@ const Dashboard = () => {
       lightColor: "#ECFDF5",
     },
 
+    {
+      title: "Pending Notes",
+      value: dashboardData.totalPendingNotes,
+      icon: <PendingActionsIcon />,
+      color: "#EA580C",
+      lightColor: "#FFF7ED",
+    },
+
   ];
 
 
@@ -89,8 +109,8 @@ const Dashboard = () => {
         minHeight: "calc(100vh - 64px)",
         backgroundColor: "#F8FAFC",
         boxSizing: "border-box",
-        pt:0,
-        overflowX:"hidden",
+        pt: 0,
+        overflowX: "hidden",
       }}
     >
 
@@ -147,7 +167,7 @@ const Dashboard = () => {
             size={{
               xs: 12,
               sm: 6,
-              md: 4,
+              md: 3,
             }}
           >
 
@@ -161,13 +181,23 @@ const Dashboard = () => {
 
                 border: "1px solid #E2E8F0",
 
-                borderTop: `4px solid ${item.color}`,
+                borderTop:
+                  `4px solid ${item.color}`,
+
+                /* ==================================
+                   CARD SHADOW
+                ================================== */
+
+                boxShadow:
+                  "0 4px 12px rgba(15, 23, 42, 0.08)",
 
                 transition: "all 0.3s ease",
 
                 "&:hover": {
                   transform: "translateY(-5px)",
-                  boxShadow: "0 10px 25px rgba(15, 23, 42, 0.10)",
+
+                  boxShadow:
+                    "0 10px 25px rgba(15, 23, 42, 0.14)",
                 },
               }}
             >
@@ -175,6 +205,7 @@ const Dashboard = () => {
               <CardContent
                 sx={{
                   p: 3,
+
                   "&:last-child": {
                     pb: 3,
                   },
@@ -204,7 +235,6 @@ const Dashboard = () => {
                       {item.title}
                     </Typography>
 
-
                     <Typography
                       variant="h4"
                       sx={{
@@ -232,7 +262,9 @@ const Dashboard = () => {
                       alignItems: "center",
                       justifyContent: "center",
 
-                      backgroundColor: item.lightColor,
+                      backgroundColor:
+                        item.lightColor,
+
                       color: item.color,
 
                       transition: "all 0.3s ease",
@@ -265,7 +297,7 @@ const Dashboard = () => {
 
 
       {/* ==========================================
-          Chart
+          Circular Statistics Graph
       ========================================== */}
 
       <Card
@@ -281,10 +313,18 @@ const Dashboard = () => {
 
           border: "1px solid #E2E8F0",
 
+          /* ======================================
+             CIRCULAR GRAPH BOX SHADOW
+          ====================================== */
+
+          boxShadow:
+            "0 4px 12px rgba(15, 23, 42, 0.08)",
+
           transition: "all 0.3s ease",
 
           "&:hover": {
-            boxShadow: "0 10px 25px rgba(15, 23, 42, 0.08)",
+            boxShadow:
+              "0 10px 25px rgba(15, 23, 42, 0.14)",
           },
         }}
       >
@@ -292,97 +332,99 @@ const Dashboard = () => {
         <CardContent
           sx={{
             p: 3,
+
             "&:last-child": {
               pb: 3,
             },
           }}
         >
 
-          {/* Chart Header */}
+          {/* Circular Graph Header */}
 
           <Box
             sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
               mb: 2,
             }}
           >
 
-            <Box>
+            <Typography
+              variant="h6"
+              sx={{
+                color: "#0F172A",
+                fontWeight: 600,
+              }}
+            >
+              Notes & User Status
+            </Typography>
 
-              <Typography
-                variant="h6"
-                sx={{
-                  color: "#0F172A",
-                  fontWeight: 600,
-                }}
-              >
-                Application Statistics
-              </Typography>
-
-              <Typography
-                variant="body2"
-                sx={{
-                  color: "#64748B",
-                  mt: 0.5,
-                }}
-              >
-                Users, notes and downloads overview
-              </Typography>
-
-            </Box>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "#64748B",
+                mt: 0.5,
+              }}
+            >
+              Users, active notes and pending notes overview
+            </Typography>
 
           </Box>
 
 
-          {/* Professional Bar Chart */}
+          {/* Circular Graph */}
 
           <Box
             sx={{
               width: "100%",
+
+              display: "flex",
+
+              justifyContent: "center",
+
+              alignItems: "center",
+
               overflow: "hidden",
+
+              height: "300px",
             }}
           >
 
-            <BarChart
-              xAxis={[
-                {
-                  scaleType: "band",
-
-                  data: [
-                    "Users",
-                    "Notes",
-                    "Downloads",
-                  ],
-
-                  tickLabelStyle: {
-                    fill: "#64748B",
-                    fontSize: 13,
-                  },
-                },
-              ]}
-
-              yAxis={[
-                {
-                  tickLabelStyle: {
-                    fill: "#64748B",
-                    fontSize: 12,
-                  },
-                },
-              ]}
-
+            <PieChart
               series={[
                 {
                   data: [
-                    dashboardData.totalUsers,
-                    dashboardData.totalNotes,
-                    dashboardData.totalDownloads,
+
+                    {
+                      id: 0,
+                      value:
+                        dashboardData.totalUsers,
+                      label: "Total Users",
+                      color: "#2563EB",
+                    },
+
+                    {
+                      id: 1,
+                      value: totalActiveNotes,
+                      label: "Active Notes",
+                      color: "#059669",
+                    },
+
+                    {
+                      id: 2,
+                      value:
+                        dashboardData.totalPendingNotes,
+                      label: "Pending Notes",
+                      color: "#EA580C",
+                    },
+
                   ],
 
-                  label: "Total",
+                  innerRadius: 65,
 
-                  color: "#2563EB",
+                  outerRadius: 105,
+
+                  paddingAngle: 3,
+
+                  cornerRadius: 6,
 
                   highlightScope: {
                     highlighted: "item",
@@ -391,30 +433,22 @@ const Dashboard = () => {
                 },
               ]}
 
-              height={360}
+              width={500}
 
-              borderRadius={8}
-
-              grid={{
-                horizontal: true,
-              }}
-
-              margin={{
-                top: 20,
-                bottom: 45,
-                left: 60,
-                right: 20,
-              }}
+              height={280}
 
               slotProps={{
                 legend: {
+                  direction: "column",
+
                   position: {
-                    vertical: "top",
+                    vertical: "middle",
                     horizontal: "right",
                   },
+
+                  padding: 10,
                 },
               }}
-
             />
 
           </Box>
@@ -427,5 +461,5 @@ const Dashboard = () => {
   );
 };
 
-
 export default Dashboard;
+

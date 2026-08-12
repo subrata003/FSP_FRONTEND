@@ -1,8 +1,7 @@
+import React, { useEffect, useState } from "react";
 
-import React, { useState } from "react";
 import {
   Box,
-  Typography,
   Paper,
   Table,
   TableBody,
@@ -10,140 +9,65 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Typography,
   Button,
-  Chip,
 } from "@mui/material";
+
 import DeleteIcon from "@mui/icons-material/Delete";
 
 const UserMangement = () => {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const token = localStorage.getItem("token");
+  console.log("token is : ",token);
+  
 
-  // ==========================================
-  // Dummy Users
-  // ==========================================
-  const [users, setUsers] = useState([
-    {
-      id: 1,
-      name: "Tamal Sarkar",
-      email: "tamal@gmail.com",
-      role: "USER",
-      isActive: true,
-    },
-    {
-      id: 2,
-      name: "Rahul Das",
-      email: "rahul@gmail.com",
-      role: "USER",
-      isActive: true,
-    },
-    {
-      id: 3,
-      name: "Priya Sharma",
-      email: "priya@gmail.com",
-      role: "Student",
-      isActive: false,
-    },
-    {
-      id: 4,
-      name: "Amit Roy",
-      email: "amit@gmail.com",
-      role: "ADMIN",
-      isActive: true,
-    },
-    {
-      id: 5,
-      name: "Sneha Gupta",
-      email: "sneha@gmail.com",
-      role: "USER",
-      isActive: false,
-    },
-  ]);
-
-  // ==========================================
-  // API - Fetch All Users
-  // Currently commented
-  // ==========================================
-
-  /*
   const fetchUsers = async () => {
     try {
       const response = await fetch(
-        "http://localhost:8080/api/users"
+        "http://192.168.29.171:8080/api/admin/students",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
       );
 
       if (!response.ok) {
-        throw new Error("Failed to fetch users");
+        throw new Error(
+          `Failed to fetch students: ${response.status}`
+        );
       }
 
       const data = await response.json();
 
-      setUsers(data);
+      console.log("API Response:", data);
 
+      if (Array.isArray(data)) {
+        setUsers(data);
+      } else {
+        console.error("API did not return an array:", data);
+        setUsers([]);
+      }
     } catch (error) {
-      console.error("Error fetching users:", error);
+      console.error("Error fetching students:", error);
+      setUsers([]);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchUsers();
   }, []);
-  */
 
-
-  // ==========================================
-  // Delete User
-  // Dummy functionality
-  // ==========================================
   const handleDelete = (id) => {
-
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this user?"
-    );
-
-    if (!confirmDelete) {
-      return;
-    }
-
-    // Remove user from dummy data
-    setUsers((previousUsers) =>
-      previousUsers.filter((user) => user.id !== id)
-    );
-
-    /*
-    // API DELETE
-    const deleteUser = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:8080/api/users/${id}`,
-          {
-            method: "DELETE",
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to delete user");
-        }
-
-        setUsers((previousUsers) =>
-          previousUsers.filter((user) => user.id !== id)
-        );
-
-      } catch (error) {
-        console.error("Error deleting user:", error);
-      }
-    };
-
-    deleteUser();
-    */
+    console.log("Delete user:", id);
   };
 
-
   return (
-    <Box sx={{ p: 3 }}>
-
-      {/* ==========================================
-          Page Header
-      ========================================== */}
-
+    <Box sx={{ width: "100%", p: 3 }}>
       <Typography
         variant="h4"
         sx={{
@@ -154,127 +78,86 @@ const UserMangement = () => {
         User Management
       </Typography>
 
-
-      {/* ==========================================
-          User Table
-      ========================================== */}
-
-      <TableContainer
-        component={Paper}
-        sx={{
-          borderRadius: 2,
-          boxShadow: 2,
-        }}
-      >
-
-        <Table>
-
-          {/* Table Header */}
-          <TableHead>
-            <TableRow>
-
-              <TableCell>
-                <strong>ID</strong>
-              </TableCell>
-
-              <TableCell>
-                <strong>Name</strong>
-              </TableCell>
-
-              <TableCell>
-                <strong>Email</strong>
-              </TableCell>
-
-              <TableCell>
-                <strong>Role</strong>
-              </TableCell>
-
-           
-
-              <TableCell align="center">
-                <strong>Action</strong>
-              </TableCell>
-
-            </TableRow>
-          </TableHead>
-
-
-          {/* Table Body */}
-          <TableBody>
-
-            {users.length > 0 ? (
-
-              users.map((user) => (
-
-                <TableRow
-                  key={user.id}
-                  hover
-                >
-
-                  <TableCell>
-                    {user.id}
-                  </TableCell>
-
-                  <TableCell>
-                    {user.name}
-                  </TableCell>
-
-                  <TableCell>
-                    {user.email}
-                  </TableCell>
-
-                  <TableCell>
-                    {user.role}
-                  </TableCell>
-
-                
-
-
-                  {/* Delete Button */}
-                  <TableCell align="center">
-
-                    <Button
-                      variant="contained"
-                      color="error"
-                      size="small"
-                      startIcon={<DeleteIcon />}
-                      onClick={() =>
-                        handleDelete(user.id)
-                      }
-                    >
-                      Delete
-                    </Button>
-
-                  </TableCell>
-
-                </TableRow>
-
-              ))
-
-            ) : (
-
+      {loading ? (
+        <Typography>Loading users...</Typography>
+      ) : (
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
               <TableRow>
-
-                <TableCell
-                  colSpan={6}
-                  align="center"
-                >
-                  No users found
+                <TableCell>
+                  <strong>ID</strong>
                 </TableCell>
 
+                <TableCell>
+                  <strong>Name</strong>
+                </TableCell>
+
+                <TableCell>
+                  <strong>Email</strong>
+                </TableCell>
+
+                <TableCell>
+                  <strong>Role</strong>
+                </TableCell>
+
+                <TableCell align="center">
+                  <strong>Action</strong>
+                </TableCell>
               </TableRow>
+            </TableHead>
 
-            )}
+            <TableBody>
+              {users.length > 0 ? (
+                users.map((user) => (
+                  <TableRow key={user.id} hover>
+                    <TableCell>
+                      {user.id}
+                    </TableCell>
 
-          </TableBody>
+                    <TableCell>
+                      {user.name}
+                    </TableCell>
 
-        </Table>
+                    <TableCell>
+                      {user.email}
+                    </TableCell>
 
-      </TableContainer>
+                    <TableCell>
+                      {user.role}
+                    </TableCell>
 
+                    <TableCell align="center">
+                      <Button
+                        variant="contained"
+                        color="error"
+                        size="small"
+                        startIcon={<DeleteIcon />}
+                        onClick={() =>
+                          handleDelete(user.id)
+                        }
+                      >
+                        Delete
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={5}
+                    align="center"
+                  >
+                    No users found
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
     </Box>
   );
 };
 
 export default UserMangement;
-
