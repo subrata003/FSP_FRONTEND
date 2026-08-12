@@ -7,15 +7,17 @@ import {
   Typography,
   Paper,
   Chip,
+  Stack,
+  Button,
 } from "@mui/material";
 
 import DescriptionIcon from "@mui/icons-material/Description";
 import DownloadIcon from "@mui/icons-material/Download";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 import Header from "../components/Header";
-import StatCard from "../components/StatCard";
 import SearchBar from "../components/SearchBar";
 import NoteCard from "../components/NoteCard";
 import UploadDialog from "../components/UploadDialog";
@@ -431,264 +433,302 @@ const Upload = () => {
   // RENDER
   // ==========================================
 
-  return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        bgcolor: "#f5f7fb",
-      }}
-    >
-      {/* HEADER */}
+ return (
+  <Box
+    sx={{
+      minHeight: "100vh",
+      bgcolor: "#f4f7fb",
+    }}
+  >
+    {/* HEADER */}
+    <Header onUpload={handleOpenUpload} />
 
-      <Header
-        onUpload={handleOpenUpload}
-      />
+    {/* MAIN */}
+    <Container maxWidth="xl" sx={{ py: 4 }}>
 
-      {/* MAIN */}
+      {/* ==================================
+          WELCOME / PAGE HEADER
+      ================================== */}
 
-      <Container
-        maxWidth="xl"
+      <Paper
+        elevation={0}
         sx={{
-          py: 4,
+          p: { xs: 3, md: 4 },
+          mb: 4,
+          borderRadius: 4,
+          color: "#fff",
+          background:
+            "linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
-        {/* PAGE TITLE */}
-
-        <Typography
-          variant="h4"
-          fontWeight={800}
-        >
-          Student Dashboard
-        </Typography>
-
-        <Typography
-          color="text.secondary"
+        {/* Decorative circle */}
+        <Box
           sx={{
-            mt: 1,
+            position: "absolute",
+            width: 220,
+            height: 220,
+            borderRadius: "50%",
+            background: "rgba(255,255,255,0.08)",
+            right: -60,
+            top: -80,
           }}
-        >
-          Manage, search and download
-          your study notes.
-        </Typography>
-
-        {/* ==================================
-            STATISTICS
-        ================================== */}
-
-        <Grid
-          container
-          spacing={3}
-          sx={{
-            mt: 1,
-          }}
-        >
-          <Grid
-            size={{
-              xs: 12,
-              sm: 6,
-              md: 3,
-            }}
-          >
-            <StatCard
-              title="Total Uploaded Notes"
-              value={notes.length}
-              description="All documents"
-              icon={
-                <DescriptionIcon />
-              }
-            />
-          </Grid>
-
-          <Grid
-            size={{
-              xs: 12,
-              sm: 6,
-              md: 3,
-            }}
-          >
-            <StatCard
-              title="Downloads"
-              value={totalDownloads}
-              description="Total downloads"
-              icon={
-                <DownloadIcon />
-              }
-            />
-          </Grid>
-
-          <Grid
-            size={{
-              xs: 12,
-              sm: 6,
-              md: 3,
-            }}
-          >
-            <StatCard
-              title="View Notes"
-              value={notes.length}
-              description="Available notes"
-              icon={
-                <VisibilityIcon />
-              }
-            />
-          </Grid>
-
-          <Grid
-            size={{
-              xs: 12,
-              sm: 6,
-              md: 3,
-            }}
-          >
-            <StatCard
-              title="Recent Uploads"
-              value={Math.min(
-                notes.length,
-                5
-              )}
-              description="Recently added"
-              icon={
-                <AccessTimeIcon />
-              }
-            />
-          </Grid>
-        </Grid>
-
-        {/* ==================================
-            SEARCH
-        ================================== */}
-
-        <SearchBar
-          search={search}
-          setSearch={setSearch}
-          onUpload={handleOpenUpload}
         />
-
-        {/* ==================================
-            NOTES
-        ================================== */}
 
         <Box
           sx={{
-            mt: 4,
+            position: "absolute",
+            width: 140,
+            height: 140,
+            borderRadius: "50%",
+            background: "rgba(255,255,255,0.06)",
+            right: 120,
+            bottom: -80,
           }}
-        >
-          {/* NOTES HEADER */}
+        />
 
-          <Box
+        <Box sx={{ position: "relative", zIndex: 1 }}>
+          <Typography
+            variant="h4"
+            fontWeight={800}
             sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              mb: 2,
+              fontSize: {
+                xs: "1.8rem",
+                md: "2.2rem",
+              },
             }}
           >
+            Welcome Back 👋
+          </Typography>
+
+          <Typography
+            sx={{
+              mt: 1,
+              color: "rgba(255,255,255,0.85)",
+              fontSize: "1rem",
+            }}
+          >
+            Manage, search and download your
+            study notes from one place.
+          </Typography>
+
+          <Button
+            variant="contained"
+            onClick={handleOpenUpload}
+            startIcon={<CloudUploadIcon />}
+            sx={{
+              mt: 3,
+              bgcolor: "#fff",
+              color: "#2563eb",
+              px: 3,
+              py: 1.2,
+              borderRadius: 2,
+              textTransform: "none",
+              fontWeight: 700,
+              boxShadow: "none",
+
+              "&:hover": {
+                bgcolor: "#f8fafc",
+                boxShadow:
+                  "0 8px 20px rgba(0,0,0,0.15)",
+              },
+            }}
+          >
+            Upload New Note
+          </Button>
+        </Box>
+      </Paper>
+
+      <Box sx={{ mt: 4 }}>
+
+        {/* SECTION HEADER */}
+
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: {
+              xs: "flex-start",
+              sm: "center",
+            },
+            flexDirection: {
+              xs: "column",
+              sm: "row",
+            },
+            gap: 2,
+            mb: 3,
+          }}
+        >
+          <Box>
             <Typography
               variant="h5"
               fontWeight={800}
+              sx={{
+                color: "#172033",
+              }}
             >
               Recent Notes
             </Typography>
 
-            <Chip
-              label={`${filteredNotes.length} Notes`}
-              color="primary"
-            />
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ mt: 0.5 }}
+            >
+              Your recently uploaded study materials
+            </Typography>
           </Box>
 
-          {/* NO NOTES */}
+          <Chip
+            label={`${filteredNotes.length} Notes`}
+            sx={{
+              fontWeight: 700,
+              bgcolor: "#e8f1ff",
+              color: "#2563eb",
+              borderRadius: 2,
+              px: 1,
+            }}
+          />
+        </Box>
 
-          {filteredNotes.length === 0 ? (
-            <Paper
+        {/* ==================================
+            EMPTY STATE
+        ================================== */}
+
+        {filteredNotes.length === 0 ? (
+
+          <Paper
+            elevation={0}
+            sx={{
+              p: {
+                xs: 4,
+                md: 7,
+              },
+              textAlign: "center",
+              borderRadius: 4,
+              border: "1px solid #e5e7eb",
+              background: "#fff",
+            }}
+          >
+            <Box
               sx={{
-                p: 5,
-                textAlign: "center",
-                borderRadius: 3,
+                width: 80,
+                height: 80,
+                mx: "auto",
+                borderRadius: "50%",
+                bgcolor: "#e8f1ff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
               <DescriptionIcon
                 sx={{
-                  fontSize: 60,
-                  color: "text.secondary",
+                  fontSize: 42,
+                  color: "#2563eb",
                 }}
               />
+            </Box>
 
-              <Typography
-                variant="h6"
-                sx={{
-                  mt: 2,
-                }}
-              >
-                No notes found
-              </Typography>
-
-              <Typography
-                color="text.secondary"
-                sx={{
-                  mt: 1,
-                }}
-              >
-                Upload your first document.
-              </Typography>
-            </Paper>
-          ) : (
-            /* NOTES GRID */
-
-            <Grid
-              container
-              spacing={3}
+            <Typography
+              variant="h6"
+              fontWeight={800}
+              sx={{ mt: 3 }}
             >
-              {filteredNotes.map(
-                (note) => (
-                  <Grid
-                    key={note.id}
-                    size={{
-                      xs: 12,
-                      md: 6,
-                      lg: 4,
-                    }}
-                  >
-                    <NoteCard
-                      note={note}
-                      onView={setSelectedNote}
-                      onDownload={
-                        handleDownload
-                      }
-                    />
-                  </Grid>
-                )
-              )}
-            </Grid>
-          )}
-        </Box>
-      </Container>
+              No notes found
+            </Typography>
 
-      {/* ==================================
-          UPLOAD DIALOG
-      ================================== */}
+            <Typography
+              color="text.secondary"
+              sx={{
+                mt: 1,
+                maxWidth: 450,
+                mx: "auto",
+              }}
+            >
+              You haven't uploaded any notes yet.
+              Start building your study library by
+              uploading your first document.
+            </Typography>
 
-      <UploadDialog
-        open={openUpload}
-        onClose={handleCloseUpload}
-        formData={formData}
-        onChange={handleChange}
-        onFileChange={handleFileChange}
-        onUpload={handleUpload}
-      />
+            <Button
+              variant="contained"
+              startIcon={<CloudUploadIcon />}
+              onClick={handleOpenUpload}
+              sx={{
+                mt: 3,
+                bgcolor: "#2563eb",
+                borderRadius: 2,
+                px: 3,
+                py: 1.2,
+                textTransform: "none",
+                fontWeight: 700,
 
-      {/* ==================================
-          VIEW NOTE DIALOG
-      ================================== */}
+                "&:hover": {
+                  bgcolor: "#1d4ed8",
+                },
+              }}
+            >
+              Upload Your First Note
+            </Button>
+          </Paper>
 
-      <ViewNoteDialog
-        note={selectedNote}
-        onClose={() =>
-          setSelectedNote(null)
-        }
-        onDownload={handleDownload}
-      />
-    </Box>
-  );
+        ) : (
+
+          /* ==================================
+              NOTES GRID
+          ================================== */
+
+          <Grid
+            container
+            spacing={3}
+          >
+            {filteredNotes.map((note) => (
+              <Grid
+                key={note.id}
+                size={{
+                  xs: 12,
+                  md: 6,
+                  lg: 4,
+                }}
+              >
+                <NoteCard
+                  note={note}
+                  onView={setSelectedNote}
+                  onDownload={handleDownload}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        )}
+      </Box>
+    </Container>
+
+    {/* ==================================
+        UPLOAD DIALOG
+    ================================== */}
+
+    <UploadDialog
+      open={openUpload}
+      onClose={handleCloseUpload}
+      formData={formData}
+      onChange={handleChange}
+      onFileChange={handleFileChange}
+      onUpload={handleUpload}
+    />
+
+    {/* ==================================
+        VIEW NOTE DIALOG
+    ================================== */}
+
+    <ViewNoteDialog
+      note={selectedNote}
+      onClose={() => setSelectedNote(null)}
+      onDownload={handleDownload}
+    />
+  </Box>
+);
 };
 
 export default Upload;

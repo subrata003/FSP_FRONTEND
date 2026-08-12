@@ -1,5 +1,4 @@
 import React from "react";
-
 import {
   Routes,
   Route,
@@ -7,12 +6,16 @@ import {
 } from "react-router-dom";
 
 import Loginpage from "./components/Loginpage";
-// import AdminDashboard from "./components/AdminDashboard";
+
+// import AdminPanel from "./components/AdminPanel";
 import AdminPanel from "./components/admin/AdminPanel/AdminPanel"
 
-import StudentDashboard from "./pages/StudentDashboard";
-import Upload from "./pages/Upload";
-import Profile from "./pages/Profile";
+// import ProtectedRoute from "./components/ProtectedRoute";
+import Note from "./pages/Note";
+import Dashboard from "./pages/Dashboard";
+import Upload from "./pages/Upload"
+import Profile from "./pages/Profile"
+import StudentDashboard from "./pages/StudentDashboard"
 
 
 // ==========================================
@@ -92,38 +95,37 @@ const ProtectedRoute = ({ children, role }) => {
 
 const App = () => {
 
+
   return (
     <Routes>
 
-      {/* ================================
+      {/* =================================
           LOGIN
-      ================================= */}
+      ================================== */}
 
       <Route
         path="/"
-        element={
-          <Loginpage />
-        }
+        element={<Loginpage />}
       />
 
 
-      {/* ================================
-          ADMIN DASHBOARD
-      ================================= */}
+      {/* =================================
+          ADMIN
+      ================================== */}
 
       <Route
         path="/admin"
         element={
           <ProtectedRoute role="admin">
-            <AdminPanel/>
+            <AdminPanel />
           </ProtectedRoute>
         }
       />
 
 
-      {/* ================================
+      {/* =================================
           STUDENT DASHBOARD
-      ================================= */}
+      ================================== */}
 
       <Route
         path="/student"
@@ -132,67 +134,45 @@ const App = () => {
             <StudentDashboard />
           </ProtectedRoute>
         }
-      />
+      >
+        {/* Dashboard */}
+        <Route
+          index
+          element={<Dashboard />}
+        />
+
+        {/* Notes */}
+        <Route
+          path="notes"
+          element={<Note />}
+        />
+
+        {/* Upload */}
+        <Route
+          path="upload"
+          element={<Upload />}
+        />
+
+        {/* Profile */}
+        <Route
+          path="profile"
+          element={<Profile />}
+        />
+      </Route>
 
 
       {/* ================================
-          STUDENT NOTE MANAGEMENT
-      ================================= */}
-
-      <Route
-        path="/student-dashboard/notes"
-        element={
-          <ProtectedRoute role="student">
-            <Upload />
-          </ProtectedRoute>
-        }
-      />
+      STUDENT NOTES
+  ================================= */}
 
 
-      {/* ================================
-          PROFILE
-      ================================= */}
 
-      <Route
-        path="/profile"
-        element={
-          <ProtectedRoute>
-            <Profile />
-          </ProtectedRoute>
-        }
-      />
-
-
-      {/* ================================
-          OLD STUDENT PROFILE URL
-      ================================= */}
-
-      <Route
-        path="/student-dashboard/profile"
-        element={
-          <ProtectedRoute role="student">
-            <Profile />
-          </ProtectedRoute>
-        }
-      />
-
-
-      {/* ================================
-          UNKNOWN URL
-      ================================= */}
-
-      <Route
-        path="*"
-        element={
-          <Navigate
-            to="/"
-            replace
-          />
-        }
-      />
 
     </Routes>
   );
 };
+
+
+
 
 export default App;

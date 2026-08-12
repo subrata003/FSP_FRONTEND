@@ -84,374 +84,692 @@ const Profile = () => {
 
   const isAdmin = loggedUser.role === "admin";
 
-  return (
+ return (
+  <Box
+    sx={{
+      minHeight: "100vh",
+      background:
+        "linear-gradient(135deg, #f4f7ff 0%, #f8fafc 50%, #eef4ff 100%)",
+      py: {
+        xs: 2,
+        md: 5,
+      },
+      px: {
+        xs: 2,
+        md: 4,
+      },
+    }}
+  >
     <Box
       sx={{
-        minHeight: "100vh",
-        background: "#f5f7fb",
-        p: {
-          xs: 2,
-          md: 4,
-        },
+        maxWidth: 1100,
+        mx: "auto",
       }}
     >
-      <Box
+      {/* =====================================
+          PAGE HEADER
+      ====================================== */}
+
+      <Box sx={{ mb: 4 }}>
+        <Typography
+          variant="h4"
+          fontWeight={800}
+          sx={{
+            color: "#172033",
+            fontSize: {
+              xs: "1.8rem",
+              md: "2.2rem",
+            },
+          }}
+        >
+          My Profile
+        </Typography>
+
+        <Typography
+          color="text.secondary"
+          sx={{
+            mt: 0.7,
+            fontSize: "0.95rem",
+          }}
+        >
+          Manage your account and view your personal
+          information.
+        </Typography>
+      </Box>
+
+      {/* =====================================
+          MAIN PROFILE CARD
+      ====================================== */}
+
+      <Paper
+        elevation={0}
         sx={{
-          maxWidth: 1100,
-          mx: "auto",
+          borderRadius: 5,
+          overflow: "hidden",
+          border: "1px solid #e5e7eb",
+          background: "#ffffff",
+          boxShadow:
+            "0 20px 50px rgba(15,23,42,0.08)",
         }}
       >
-        {/* ================================
-            HEADER
-        ================================= */}
-        <Paper
-          elevation={0}
-          sx={{
-            p: {
-              xs: 2,
-              md: 3,
-            },
-            mb: 3,
-            borderRadius: 3,
-            border: "1px solid #e5e7eb",
-          }}
-        >
-          <Typography
-            variant="h4"
-            fontWeight="bold"
-          >
-            My Profile
-          </Typography>
+        {/* =====================================
+            PROFILE HERO
+        ====================================== */}
 
-          <Typography
-            color="text.secondary"
-            sx={{ mt: 0.5 }}
-          >
-            View your account information
-          </Typography>
-        </Paper>
-
-        {/* ================================
-            PROFILE CARD
-        ================================= */}
-        <Card
-          elevation={3}
+        <Box
           sx={{
-            borderRadius: 4,
+            position: "relative",
             overflow: "hidden",
+            px: {
+              xs: 3,
+              md: 5,
+            },
+            py: {
+              xs: 4,
+              md: 5,
+            },
+
+            background: isAdmin
+              ? "linear-gradient(135deg, #7c3aed 0%, #4f46e5 55%, #2563eb 100%)"
+              : "linear-gradient(135deg, #2563eb 0%, #4f46e5 55%, #6366f1 100%)",
           }}
         >
-          {/* Profile Header */}
+          {/* Decorative circles */}
+
           <Box
             sx={{
-              background: isAdmin
-                ? "linear-gradient(135deg, #7b1fa2, #512da8)"
-                : "linear-gradient(135deg, #1976d2, #0288d1)",
-              color: "white",
-              p: {
-                xs: 3,
-                md: 5,
-              },
+              position: "absolute",
+              width: 260,
+              height: 260,
+              borderRadius: "50%",
+              background:
+                "rgba(255,255,255,0.08)",
+              right: -80,
+              top: -120,
+            }}
+          />
+
+          <Box
+            sx={{
+              position: "absolute",
+              width: 180,
+              height: 180,
+              borderRadius: "50%",
+              background:
+                "rgba(255,255,255,0.06)",
+              right: 120,
+              bottom: -110,
+            }}
+          />
+
+          {/* Profile content */}
+
+          <Box
+            sx={{
+              position: "relative",
+              zIndex: 2,
+              display: "flex",
+              alignItems: "center",
+              gap: 3,
+              flexWrap: "wrap",
             }}
           >
-            <Box
+            {/* AVATAR */}
+
+            <Avatar
               sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 3,
-                flexWrap: "wrap",
+                width: {
+                  xs: 85,
+                  md: 105,
+                },
+                height: {
+                  xs: 85,
+                  md: 105,
+                },
+                fontSize: {
+                  xs: 34,
+                  md: 42,
+                },
+                fontWeight: 800,
+                background: "#ffffff",
+                color: isAdmin
+                  ? "#6366f1"
+                  : "#2563eb",
+                border:
+                  "5px solid rgba(255,255,255,0.25)",
+                boxShadow:
+                  "0 10px 30px rgba(0,0,0,0.18)",
               }}
             >
-              <Avatar
+              {avatarLetter}
+            </Avatar>
+
+            {/* USER INFO */}
+
+            <Box sx={{ color: "#fff" }}>
+              <Typography
+                variant="h4"
+                fontWeight={800}
                 sx={{
-                  width: 100,
-                  height: 100,
-                  fontSize: 42,
-                  fontWeight: "bold",
-                  backgroundColor: "white",
-                  color: isAdmin
-                    ? "#7b1fa2"
-                    : "#1976d2",
-                  boxShadow: 3,
+                  fontSize: {
+                    xs: "1.7rem",
+                    md: "2.1rem",
+                  },
                 }}
               >
-                {avatarLetter}
-              </Avatar>
+                {loggedUser.name}
+              </Typography>
 
-              <Box>
-                <Typography
-                  variant="h4"
-                  fontWeight="bold"
-                >
-                  {loggedUser.name}
-                </Typography>
+              <Typography
+                sx={{
+                  mt: 0.5,
+                  color:
+                    "rgba(255,255,255,0.85)",
+                  wordBreak: "break-word",
+                }}
+              >
+                {loggedUser.email}
+              </Typography>
 
-                <Typography
-                  sx={{
-                    opacity: 0.9,
-                    mt: 0.5,
-                  }}
-                >
-                  {loggedUser.email}
-                </Typography>
+              <Chip
+                icon={
+                  isAdmin ? (
+                    <AdminPanelSettings />
+                  ) : (
+                    <School />
+                  )
+                }
+                label={
+                  isAdmin
+                    ? "Administrator"
+                    : "Student"
+                }
+                sx={{
+                  mt: 2,
+                  px: 1,
+                  fontWeight: 700,
+                  color: "#fff",
+                  background:
+                    "rgba(255,255,255,0.16)",
+                  border:
+                    "1px solid rgba(255,255,255,0.25)",
+                  backdropFilter:
+                    "blur(10px)",
 
-                <Chip
-                  icon={
-                    isAdmin ? (
-                      <AdminPanelSettings />
-                    ) : (
-                      <School />
-                    )
-                  }
-                  label={
-                    isAdmin
-                      ? "Administrator"
-                      : "Student"
-                  }
-                  sx={{
-                    mt: 2,
-                    color: "white",
-                    backgroundColor:
-                      "rgba(255,255,255,0.2)",
-                    fontWeight: "bold",
-                    "& .MuiChip-icon": {
-                      color: "white",
-                    },
-                  }}
-                />
-              </Box>
+                  "& .MuiChip-icon": {
+                    color: "#fff",
+                  },
+                }}
+              />
             </Box>
           </Box>
+        </Box>
 
-          <CardContent sx={{ p: { xs: 2, md: 4 } }}>
-            <Typography
-              variant="h6"
-              fontWeight="bold"
-              sx={{ mb: 3 }}
+        {/* =====================================
+            PROFILE CONTENT
+        ====================================== */}
+
+        <Box
+          sx={{
+            p: {
+              xs: 2.5,
+              md: 5,
+            },
+          }}
+        >
+          <Typography
+            variant="h6"
+            fontWeight={800}
+            sx={{
+              color: "#172033",
+              mb: 3,
+            }}
+          >
+            Personal Information
+          </Typography>
+
+          <Grid
+            container
+            spacing={2.5}
+          >
+            {/* NAME */}
+
+            <Grid
+              size={{
+                xs: 12,
+                md: 6,
+              }}
             >
-              Personal Information
-            </Typography>
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 2.5,
+                  height: "100%",
+                  borderRadius: 3,
+                  border:
+                    "1px solid #e5e7eb",
+                  background: "#fafbff",
+                  transition:
+                    "all 0.25s",
 
-            <Grid container spacing={3}>
-              {/* NAME */}
-              <Grid item xs={12} md={6}>
-                <Paper
-                  variant="outlined"
+                  "&:hover": {
+                    transform:
+                      "translateY(-3px)",
+                    borderColor:
+                      "#bfdbfe",
+                    boxShadow:
+                      "0 10px 25px rgba(37,99,235,0.08)",
+                  },
+                }}
+              >
+                <Box
                   sx={{
-                    p: 2,
-                    borderRadius: 2,
-                    height: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 2,
                   }}
                 >
                   <Box
                     sx={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: 2,
                       display: "flex",
                       alignItems: "center",
-                      gap: 2,
+                      justifyContent: "center",
+                      background: "#e8f1ff",
+                      color: "#2563eb",
                     }}
                   >
-                    <Person color="primary" />
-
-                    <Box>
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                      >
-                        Full Name
-                      </Typography>
-
-                      <Typography
-                        fontWeight="bold"
-                      >
-                        {loggedUser.name}
-                      </Typography>
-                    </Box>
+                    <Person />
                   </Box>
-                </Paper>
-              </Grid>
 
-              {/* EMAIL */}
-              <Grid item xs={12} md={6}>
-                <Paper
-                  variant="outlined"
+                  <Box>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      fontWeight={600}
+                    >
+                      Full Name
+                    </Typography>
+
+                    <Typography
+                      fontWeight={800}
+                      sx={{
+                        color: "#172033",
+                        mt: 0.3,
+                      }}
+                    >
+                      {loggedUser.name}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Paper>
+            </Grid>
+
+            {/* EMAIL */}
+
+            <Grid
+              size={{
+                xs: 12,
+                md: 6,
+              }}
+            >
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 2.5,
+                  height: "100%",
+                  borderRadius: 3,
+                  border:
+                    "1px solid #e5e7eb",
+                  background: "#fafbff",
+                  transition:
+                    "all 0.25s",
+
+                  "&:hover": {
+                    transform:
+                      "translateY(-3px)",
+                    borderColor:
+                      "#bbf7d0",
+                    boxShadow:
+                      "0 10px 25px rgba(16,185,129,0.08)",
+                  },
+                }}
+              >
+                <Box
                   sx={{
-                    p: 2,
-                    borderRadius: 2,
-                    height: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 2,
                   }}
                 >
                   <Box
                     sx={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: 2,
                       display: "flex",
                       alignItems: "center",
-                      gap: 2,
+                      justifyContent: "center",
+                      background: "#e9fbf3",
+                      color: "#10b981",
                     }}
                   >
-                    <Email color="primary" />
-
-                    <Box>
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                      >
-                        Email Address
-                      </Typography>
-
-                      <Typography
-                        fontWeight="bold"
-                        sx={{
-                          wordBreak: "break-word",
-                        }}
-                      >
-                        {loggedUser.email}
-                      </Typography>
-                    </Box>
+                    <Email />
                   </Box>
-                </Paper>
-              </Grid>
 
-              {/* DEPARTMENT */}
-              <Grid item xs={12} md={6}>
-                <Paper
-                  variant="outlined"
+                  <Box sx={{ minWidth: 0 }}>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      fontWeight={600}
+                    >
+                      Email Address
+                    </Typography>
+
+                    <Typography
+                      fontWeight={800}
+                      sx={{
+                        color: "#172033",
+                        mt: 0.3,
+                        wordBreak:
+                          "break-word",
+                      }}
+                    >
+                      {loggedUser.email}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Paper>
+            </Grid>
+
+            {/* DEPARTMENT */}
+
+            <Grid
+              size={{
+                xs: 12,
+                md: 6,
+              }}
+            >
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 2.5,
+                  height: "100%",
+                  borderRadius: 3,
+                  border:
+                    "1px solid #e5e7eb",
+                  background: "#fafbff",
+                  transition:
+                    "all 0.25s",
+
+                  "&:hover": {
+                    transform:
+                      "translateY(-3px)",
+                    borderColor:
+                      "#ddd6fe",
+                    boxShadow:
+                      "0 10px 25px rgba(139,92,246,0.08)",
+                  },
+                }}
+              >
+                <Box
                   sx={{
-                    p: 2,
-                    borderRadius: 2,
-                    height: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 2,
                   }}
                 >
                   <Box
                     sx={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: 2,
                       display: "flex",
                       alignItems: "center",
-                      gap: 2,
+                      justifyContent: "center",
+                      background: "#f2edff",
+                      color: "#8b5cf6",
                     }}
                   >
-                    <Business color="primary" />
-
-                    <Box>
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                      >
-                        Department
-                      </Typography>
-
-                      <Typography
-                        fontWeight="bold"
-                      >
-                        {loggedUser.department ||
-                          "Not Available"}
-                      </Typography>
-                    </Box>
+                    <Business />
                   </Box>
-                </Paper>
-              </Grid>
 
-              {/* ROLL NUMBER */}
-              <Grid item xs={12} md={6}>
-                <Paper
-                  variant="outlined"
+                  <Box>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      fontWeight={600}
+                    >
+                      Department
+                    </Typography>
+
+                    <Typography
+                      fontWeight={800}
+                      sx={{
+                        color: "#172033",
+                        mt: 0.3,
+                      }}
+                    >
+                      {loggedUser.department ||
+                        "Not Available"}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Paper>
+            </Grid>
+
+            {/* ROLL NUMBER */}
+
+            <Grid
+              size={{
+                xs: 12,
+                md: 6,
+              }}
+            >
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 2.5,
+                  height: "100%",
+                  borderRadius: 3,
+                  border:
+                    "1px solid #e5e7eb",
+                  background: "#fafbff",
+                  transition:
+                    "all 0.25s",
+
+                  "&:hover": {
+                    transform:
+                      "translateY(-3px)",
+                    borderColor:
+                      "#fed7aa",
+                    boxShadow:
+                      "0 10px 25px rgba(245,158,11,0.08)",
+                  },
+                }}
+              >
+                <Box
                   sx={{
-                    p: 2,
-                    borderRadius: 2,
-                    height: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 2,
                   }}
                 >
                   <Box
                     sx={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: 2,
                       display: "flex",
                       alignItems: "center",
-                      gap: 2,
+                      justifyContent: "center",
+                      background: "#fff6e5",
+                      color: "#f59e0b",
                     }}
                   >
-                    <Badge color="primary" />
-
-                    <Box>
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                      >
-                        Roll Number / ID
-                      </Typography>
-
-                      <Typography
-                        fontWeight="bold"
-                      >
-                        {loggedUser.rollNumber ||
-                          "Not Available"}
-                      </Typography>
-                    </Box>
+                    <Badge />
                   </Box>
-                </Paper>
-              </Grid>
 
-              {/* ROLE */}
-              <Grid item xs={12}>
-                <Paper
-                  variant="outlined"
+                  <Box>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      fontWeight={600}
+                    >
+                      Roll Number / ID
+                    </Typography>
+
+                    <Typography
+                      fontWeight={800}
+                      sx={{
+                        color: "#172033",
+                        mt: 0.3,
+                      }}
+                    >
+                      {loggedUser.rollNumber ||
+                        "Not Available"}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Paper>
+            </Grid>
+
+            {/* ACCOUNT TYPE */}
+
+            <Grid size={{ xs: 12 }}>
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 2.5,
+                  borderRadius: 3,
+                  border:
+                    "1px solid #e5e7eb",
+                  background:
+                    isAdmin
+                      ? "#faf5ff"
+                      : "#eff6ff",
+                }}
+              >
+                <Box
                   sx={{
-                    p: 2,
-                    borderRadius: 2,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 2,
                   }}
                 >
                   <Box
                     sx={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: 2,
                       display: "flex",
                       alignItems: "center",
-                      gap: 2,
+                      justifyContent: "center",
+                      background:
+                        isAdmin
+                          ? "#f3e8ff"
+                          : "#dbeafe",
+                      color:
+                        isAdmin
+                          ? "#7c3aed"
+                          : "#2563eb",
                     }}
                   >
                     {isAdmin ? (
-                      <AdminPanelSettings color="primary" />
+                      <AdminPanelSettings />
                     ) : (
-                      <School color="primary" />
+                      <School />
                     )}
-
-                    <Box>
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                      >
-                        Account Type
-                      </Typography>
-
-                      <Typography
-                        fontWeight="bold"
-                        sx={{
-                          textTransform: "capitalize",
-                        }}
-                      >
-                        {loggedUser.role}
-                      </Typography>
-                    </Box>
                   </Box>
-                </Paper>
-              </Grid>
+
+                  <Box>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      fontWeight={600}
+                    >
+                      Account Type
+                    </Typography>
+
+                    <Typography
+                      fontWeight={800}
+                      sx={{
+                        color: "#172033",
+                        mt: 0.3,
+                        textTransform:
+                          "capitalize",
+                      }}
+                    >
+                      {loggedUser.role}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Paper>
             </Grid>
+          </Grid>
 
-            <Divider sx={{ my: 4 }} />
+          {/* =====================================
+              ACCOUNT ACTION
+          ====================================== */}
 
-            {/* LOGOUT */}
+          <Divider sx={{ my: 4 }} />
+
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent:
+                "space-between",
+              alignItems: "center",
+              gap: 2,
+              flexWrap: "wrap",
+            }}
+          >
+            <Box>
+              <Typography
+                fontWeight={800}
+                sx={{ color: "#172033" }}
+              >
+                Account Security
+              </Typography>
+
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ mt: 0.4 }}
+              >
+                Sign out from your current account.
+              </Typography>
+            </Box>
+
             <Button
-              variant="contained"
+              variant="outlined"
               color="error"
               startIcon={<Logout />}
               onClick={handleLogout}
               sx={{
-                borderRadius: 2,
-                px: 4,
+                minWidth: 140,
+                borderRadius: 2.5,
+                px: 3,
                 py: 1.2,
-                fontWeight: "bold",
+                fontWeight: 700,
+                textTransform: "none",
+
+                "&:hover": {
+                  background: "#fef2f2",
+                  borderColor: "#ef4444",
+                },
               }}
             >
               Logout
             </Button>
-          </CardContent>
-        </Card>
-      </Box>
+          </Box>
+        </Box>
+      </Paper>
     </Box>
-  );
+  </Box>
+);
 };
 
 export default Profile;

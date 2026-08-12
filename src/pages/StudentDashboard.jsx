@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
+
 import {
   Box,
   List,
@@ -13,46 +14,86 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import PeopleIcon from "@mui/icons-material/People";
 import DescriptionIcon from "@mui/icons-material/Description";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import Dashboard from "./Dashboard";
-import Profile from "./Profile";
-import Note from "./Note";
-import Upload from "./Upload";
 
-// Student Pages
-// import Dashboard from "../student_pages/Dashboard";
-// import Profile from "../student_pages/Profile";
-// import Note from "../student_pages/Note";
-// import Upload from "../student_pages/Upload";
+import {
+  Outlet,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 
 const StudentDashboard = () => {
-  const [activePage, setActivePage] = useState("dashboard");
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  // Change sidebar page
-  const handlePageChange = (page) => {
-    setActivePage(page);
+  // ==========================================
+  // GET ACTIVE PAGE FROM URL
+  // ==========================================
+
+  const getActivePage = () => {
+    if (location.pathname === "/student") {
+      return "dashboard";
+    }
+
+    if (
+      location.pathname.startsWith(
+        "/student/profile"
+      )
+    ) {
+      return "profile";
+    }
+
+    if (
+      location.pathname.startsWith(
+        "/student/upload"
+      )
+    ) {
+      return "upload";
+    }
+
+    if (
+      location.pathname.startsWith(
+        "/student/notes"
+      )
+    ) {
+      return "notes";
+    }
+
+    return "dashboard";
   };
 
-  // Render selected page
-  const renderContent = () => {
-    switch (activePage) {
+  const activePage = getActivePage();
+
+  // ==========================================
+  // NAVIGATION
+  // ==========================================
+
+  const handlePageChange = (page) => {
+    switch (page) {
       case "dashboard":
-        return <Dashboard />;
+        navigate("/student");
+        break;
 
       case "profile":
-        return <Profile />;
-
-      case "notes":
-        return <Note />;
+        navigate("/student/profile");
+        break;
 
       case "upload":
-        return <Upload />;
+        navigate("/student/upload");
+        break;
+
+      case "notes":
+        navigate("/student/notes");
+        break;
 
       default:
-        return <Dashboard />;
+        navigate("/student");
     }
   };
 
-  // Sidebar menu style
+  // ==========================================
+  // SIDEBAR STYLE
+  // ==========================================
+
   const menuItemStyle = {
     borderRadius: 2,
     mb: 1,
@@ -74,72 +115,108 @@ const StudentDashboard = () => {
   return (
     <Box
       sx={{
-        display: "flex",
         minHeight: "100vh",
         backgroundColor: "#f5f7fa",
       }}
     >
-      {/* ================= SIDEBAR ================= */}
+
+      {/* ==========================================
+          SIDEBAR
+      ========================================== */}
+
       <Box
         sx={{
           width: 240,
           height: "100vh",
+
           backgroundColor: "#ffffff",
-          borderRight: "1px solid #e5e7eb",
+
+          borderRight:
+            "1px solid #e5e7eb",
 
           position: "fixed",
+
           left: 0,
           top: 0,
 
           p: 2,
+
           boxSizing: "border-box",
 
           zIndex: 1000,
+
+          overflowY: "auto",
         }}
       >
-        {/* Logo */}
+
+        {/* ==============================
+            LOGO
+        ============================== */}
+
         <Box
           sx={{
             height: 60,
+
             display: "flex",
+
             alignItems: "center",
+
             px: 1,
+
             mb: 2,
           }}
         >
           <Typography
             sx={{
-              fontSize: 24,
+              fontSize: 22,
+
               fontWeight: 800,
+
               color: "#1597f5",
+
               letterSpacing: 1,
             }}
           >
-            ONSS
+            CampusNotes
           </Typography>
         </Box>
 
         <Divider sx={{ mb: 2 }} />
 
-        {/* Navigation */}
+        {/* ==============================
+            NAVIGATION
+        ============================== */}
+
         <List sx={{ p: 0 }}>
-          {/* Dashboard */}
+
+          {/* =================================
+              DASHBOARD
+          ================================= */}
+
           <ListItemButton
-            selected={activePage === "dashboard"}
-            onClick={() => handlePageChange("dashboard")}
+            selected={
+              activePage === "dashboard"
+            }
+            onClick={() =>
+              handlePageChange(
+                "dashboard"
+              )
+            }
             sx={menuItemStyle}
           >
-            <ListItemIcon sx={{ minWidth: 42 }}>
+            <ListItemIcon
+              sx={{ minWidth: 42 }}
+            >
               <DashboardIcon
                 sx={{
                   color:
-                    activePage === "dashboard"
+                    activePage ===
+                      "dashboard"
                       ? "#1597f5"
                       : "#555",
                 }}
               />
             </ListItemIcon>
-
 
             <ListItemText
               primary="Dashboard"
@@ -149,21 +226,31 @@ const StudentDashboard = () => {
                 },
               }}
             />
-
-
           </ListItemButton>
 
-          {/* Profile */}
+          {/* =================================
+              PROFILE
+          ================================= */}
+
           <ListItemButton
-            selected={activePage === "profile"}
-            onClick={() => handlePageChange("profile")}
+            selected={
+              activePage === "profile"
+            }
+            onClick={() =>
+              handlePageChange(
+                "profile"
+              )
+            }
             sx={menuItemStyle}
           >
-            <ListItemIcon sx={{ minWidth: 42 }}>
+            <ListItemIcon
+              sx={{ minWidth: 42 }}
+            >
               <PeopleIcon
                 sx={{
                   color:
-                    activePage === "profile"
+                    activePage ===
+                      "profile"
                       ? "#1597f5"
                       : "#555",
                 }}
@@ -180,17 +267,29 @@ const StudentDashboard = () => {
             />
           </ListItemButton>
 
-          {/* Upload */}
+          {/* =================================
+              UPLOAD
+          ================================= */}
+
           <ListItemButton
-            selected={activePage === "upload"}
-            onClick={() => handlePageChange("upload")}
+            selected={
+              activePage === "upload"
+            }
+            onClick={() =>
+              handlePageChange(
+                "upload"
+              )
+            }
             sx={menuItemStyle}
           >
-            <ListItemIcon sx={{ minWidth: 42 }}>
+            <ListItemIcon
+              sx={{ minWidth: 42 }}
+            >
               <CloudUploadIcon
                 sx={{
                   color:
-                    activePage === "upload"
+                    activePage ===
+                      "upload"
                       ? "#1597f5"
                       : "#555",
                 }}
@@ -207,17 +306,29 @@ const StudentDashboard = () => {
             />
           </ListItemButton>
 
-          {/* Note Management */}
+          {/* =================================
+              NOTE MANAGEMENT
+          ================================= */}
+
           <ListItemButton
-            selected={activePage === "notes"}
-            onClick={() => handlePageChange("notes")}
+            selected={
+              activePage === "notes"
+            }
+            onClick={() =>
+              handlePageChange(
+                "notes"
+              )
+            }
             sx={menuItemStyle}
           >
-            <ListItemIcon sx={{ minWidth: 42 }}>
+            <ListItemIcon
+              sx={{ minWidth: 42 }}
+            >
               <DescriptionIcon
                 sx={{
                   color:
-                    activePage === "notes"
+                    activePage ===
+                      "notes"
                       ? "#1597f5"
                       : "#555",
                 }}
@@ -233,29 +344,46 @@ const StudentDashboard = () => {
               }}
             />
           </ListItemButton>
+
         </List>
       </Box>
 
-      {/* ================= MAIN CONTENT ================= */}
+      {/* ==========================================
+          MAIN CONTENT
+      ========================================== */}
+
       <Box
         component="main"
         sx={{
-          flexGrow: 1,
           marginLeft: "240px",
+
           minHeight: "100vh",
+
+          boxSizing: "border-box",
+
           p: {
             xs: 2,
             sm: 3,
             md: 4,
           },
-          boxSizing: "border-box",
         }}
       >
-        {renderContent()}
+
+        {/* 
+          Child routes render here
+
+          /student          -> Dashboard
+          /student/profile  -> Profile
+          /student/upload   -> Upload
+          /student/notes    -> Note
+        */}
+
+        <Outlet />
+
       </Box>
+
     </Box>
   );
 };
 
 export default StudentDashboard;
-

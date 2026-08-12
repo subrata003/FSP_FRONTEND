@@ -182,109 +182,53 @@ const Note = () => {
 
   // DOWNLOAD FILE
 
-  const handleDownload = (
-    note
-  ) => {
-    if (!note.fileData) {
-      alert(
-        "File is not available."
-      );
-      return;
-    }
-
+  const handleDownload = async (note) => {
     try {
-      const byteCharacters =
-        atob(note.fileData);
+      const token = localStorage.getItem("token");
 
-      const byteNumbers =
-        new Array(
-          byteCharacters.length
-        );
-
-      for (
-        let i = 0;
-        i <
-        byteCharacters.length;
-        i++
-      ) {
-        byteNumbers[i] =
-          byteCharacters.charCodeAt(
-            i
-          );
-      }
-
-      const byteArray =
-        new Uint8Array(
-          byteNumbers
-        );
-
-      const blob = new Blob(
-        [byteArray],
+      const response = await fetch(
+        `http://localhost:8080/api/notes/${note.id}/download`,
         {
-          type:
-            note.fileType ||
-            "application/octet-stream",
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
-      const url =
-        URL.createObjectURL(
-          blob
+      if (!response.ok) {
+        throw new Error(
+          `Download failed: ${response.status}`
         );
+      }
 
-      const link =
-        document.createElement(
-          "a"
-        );
+      // Convert response to Blob
+      const blob = await response.blob();
+
+      // Create temporary URL
+      const url = URL.createObjectURL(blob);
+
+      // Create download link
+      const link = document.createElement("a");
 
       link.href = url;
 
       link.download =
-        note.fileName ||
-        "document";
+        note.pdfName || "document.pdf";
 
-      document.body.appendChild(
-        link
-      );
+      document.body.appendChild(link);
 
       link.click();
 
-      document.body.removeChild(
-        link
-      );
+      document.body.removeChild(link);
 
+      // Clean URL
       URL.revokeObjectURL(url);
 
-      // Update download count
-      const updatedNotes =
-        notes.map((item) =>
-          item.id === note.id
-            ? {
-              ...item,
-              downloads:
-                (item.downloads ||
-                  0) + 1,
-            }
-            : item
-        );
-
-      setNotes(updatedNotes);
-
-      localStorage.setItem(
-        "uploadedNotes",
-        JSON.stringify(
-          updatedNotes
-        )
-      );
     } catch (error) {
-      console.error(
-        "Download error:",
-        error
-      );
+      console.error("Download error:", error);
 
-      alert(
-        "Unable to download document."
-      );
+      alert("Unable to download document.");
     }
   };
 
@@ -294,7 +238,7 @@ const Note = () => {
 
   const clearFilters = () => {
     setSearch("");
-    setDepartment("");
+    setBranch("");
     setSemester("");
   };
 
@@ -304,56 +248,74 @@ const Note = () => {
     <Box
       sx={{
         minHeight: "100vh",
-        bgcolor: "#f5f7fb",
-        py: 4,
+        background:
+          "linear-gradient(135deg, #F8FAFC 0%, #EEF4FF 100%)",
+        py: { xs: 3, md: 5 },
       }}
     >
       <Container maxWidth="xl">
 
-        {/* HEADER */}
+        {/* =========================
+          PAGE HEADER
+      ========================= */}
 
         <Box sx={{ mb: 4 }}>
           <Typography
-            variant="h4"
-            fontWeight={800}
+            variant="h3"
+            fontWeight={900}
             sx={{
-              color: "#172033",
+              color: "#0F172A",
+              letterSpacing: "-1px",
+              fontSize: {
+                xs: "2rem",
+                md: "2.5rem",
+              },
             }}
           >
-            Notes
+            Explore Notes 📚
           </Typography>
 
           <Typography
-            color="text.secondary"
-            sx={{ mt: 1 }}
+            sx={{
+              mt: 1,
+              color: "#64748B",
+              fontSize: "1rem",
+            }}
           >
-            All uploaded study
-            documents
+            Search, view and download study materials
+            shared by you.
           </Typography>
         </Box>
 
-        {/* STAT */}
+        {/* =========================
+          STATISTICS
+      ========================= */}
 
         <Grid
           container
           spacing={3}
           sx={{ mb: 4 }}
         >
+
+          {/* TOTAL NOTES */}
+
           <Grid
-            item
-            xs={12}
-            sm={6}
-            md={4}
+            size={{
+              xs: 12,
+              sm: 6,
+              md: 4,
+            }}
           >
             <Card
               sx={{
-                borderRadius: 3,
-                border:
-                  "1px solid #e5e7eb",
-                boxShadow: "none",
+                borderRadius: 4,
+                border: "1px solid #E2E8F0",
+                boxShadow:
+                  "0 8px 30px rgba(15, 23, 42, 0.05)",
+                background: "#FFFFFF",
               }}
             >
-              <CardContent>
+              <CardContent sx={{ p: 3 }}>
                 <Stack
                   direction="row"
                   justifyContent="space-between"
@@ -361,48 +323,82 @@ const Note = () => {
                 >
                   <Box>
                     <Typography
-                      color="text.secondary"
-                      fontWeight={600}
+                      sx={{
+                        color: "#64748B",
+                        fontWeight: 600,
+                      }}
                     >
-                      Total Uploaded
+                      Total Notes
                     </Typography>
 
                     <Typography
-                      variant="h4"
-                      fontWeight={800}
-                      sx={{ mt: 1 }}
+                      variant="h3"
+                      fontWeight={900}
+                      sx={{
+                        mt: 1,
+                        color: "#0F172A",
+                      }}
                     >
                       {notes.length}
                     </Typography>
+
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        mt: 0.5,
+                        color: "#10B981",
+                        fontWeight: 600,
+                      }}
+                    >
+                      Available documents
+                    </Typography>
                   </Box>
 
-                  <DescriptionIcon
+                  <Box
                     sx={{
-                      fontSize: 45,
-                      color:
-                        "#0795e8",
+                      width: 58,
+                      height: 58,
+                      borderRadius: 3,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      background:
+                        "linear-gradient(135deg, #2563EB, #3B82F6)",
+                      boxShadow:
+                        "0 8px 20px rgba(37,99,235,0.25)",
                     }}
-                  />
+                  >
+                    <DescriptionIcon
+                      sx={{
+                        color: "#FFFFFF",
+                        fontSize: 30,
+                      }}
+                    />
+                  </Box>
                 </Stack>
               </CardContent>
             </Card>
           </Grid>
 
+          {/* SEARCH RESULT */}
+
           <Grid
-            item
-            xs={12}
-            sm={6}
-            md={4}
+            size={{
+              xs: 12,
+              sm: 6,
+              md: 4,
+            }}
           >
             <Card
               sx={{
-                borderRadius: 3,
-                border:
-                  "1px solid #e5e7eb",
-                boxShadow: "none",
+                borderRadius: 4,
+                border: "1px solid #E2E8F0",
+                boxShadow:
+                  "0 8px 30px rgba(15, 23, 42, 0.05)",
+                background: "#FFFFFF",
               }}
             >
-              <CardContent>
+              <CardContent sx={{ p: 3 }}>
                 <Stack
                   direction="row"
                   justifyContent="space-between"
@@ -410,50 +406,82 @@ const Note = () => {
                 >
                   <Box>
                     <Typography
-                      color="text.secondary"
-                      fontWeight={600}
+                      sx={{
+                        color: "#64748B",
+                        fontWeight: 600,
+                      }}
                     >
-                      Search Result
+                      Search Results
                     </Typography>
 
                     <Typography
-                      variant="h4"
-                      fontWeight={800}
-                      sx={{ mt: 1 }}
+                      variant="h3"
+                      fontWeight={900}
+                      sx={{
+                        mt: 1,
+                        color: "#0F172A",
+                      }}
                     >
-                      {
-                        filteredNotes.length
-                      }
+                      {filteredNotes.length}
+                    </Typography>
+
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        mt: 0.5,
+                        color: "#7C3AED",
+                        fontWeight: 600,
+                      }}
+                    >
+                      Matching notes
                     </Typography>
                   </Box>
 
-                  <SearchIcon
+                  <Box
                     sx={{
-                      fontSize: 45,
-                      color:
-                        "#0795e8",
+                      width: 58,
+                      height: 58,
+                      borderRadius: 3,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      background:
+                        "linear-gradient(135deg, #7C3AED, #8B5CF6)",
+                      boxShadow:
+                        "0 8px 20px rgba(124,58,237,0.25)",
                     }}
-                  />
+                  >
+                    <SearchIcon
+                      sx={{
+                        color: "#FFFFFF",
+                        fontSize: 30,
+                      }}
+                    />
+                  </Box>
                 </Stack>
               </CardContent>
             </Card>
           </Grid>
 
+          {/* DOWNLOADS */}
+
           <Grid
-            item
-            xs={12}
-            sm={6}
-            md={4}
+            size={{
+              xs: 12,
+              sm: 6,
+              md: 4,
+            }}
           >
             <Card
               sx={{
-                borderRadius: 3,
-                border:
-                  "1px solid #e5e7eb",
-                boxShadow: "none",
+                borderRadius: 4,
+                border: "1px solid #E2E8F0",
+                boxShadow:
+                  "0 8px 30px rgba(15, 23, 42, 0.05)",
+                background: "#FFFFFF",
               }}
             >
-              <CardContent>
+              <CardContent sx={{ p: 3 }}>
                 <Stack
                   direction="row"
                   justifyContent="space-between"
@@ -461,103 +489,168 @@ const Note = () => {
                 >
                   <Box>
                     <Typography
-                      color="text.secondary"
-                      fontWeight={600}
+                      sx={{
+                        color: "#64748B",
+                        fontWeight: 600,
+                      }}
                     >
-                      Downloads
+                      Total Downloads
                     </Typography>
 
                     <Typography
-                      variant="h4"
-                      fontWeight={800}
-                      sx={{ mt: 1 }}
+                      variant="h3"
+                      fontWeight={900}
+                      sx={{
+                        mt: 1,
+                        color: "#0F172A",
+                      }}
                     >
                       {notes.reduce(
-                        (
-                          total,
-                          note
-                        ) =>
+                        (total, note) =>
                           total +
-                          (note.downloads ||
-                            0),
+                          (note.downloads || 0),
                         0
                       )}
                     </Typography>
+
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        mt: 0.5,
+                        color: "#F59E0B",
+                        fontWeight: 600,
+                      }}
+                    >
+                      Resources downloaded
+                    </Typography>
                   </Box>
 
-                  <DownloadIcon
+                  <Box
                     sx={{
-                      fontSize: 45,
-                      color:
-                        "#0795e8",
+                      width: 58,
+                      height: 58,
+                      borderRadius: 3,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      background:
+                        "linear-gradient(135deg, #F59E0B, #F97316)",
+                      boxShadow:
+                        "0 8px 20px rgba(245,158,11,0.25)",
                     }}
-                  />
+                  >
+                    <DownloadIcon
+                      sx={{
+                        color: "#FFFFFF",
+                        fontSize: 30,
+                      }}
+                    />
+                  </Box>
                 </Stack>
               </CardContent>
             </Card>
           </Grid>
         </Grid>
 
-        {/* SEARCH */}
+        {/* =========================
+          SEARCH & FILTER
+      ========================= */}
 
         <Paper
           elevation={0}
           sx={{
-            p: 2,
-            mb: 4,
-            borderRadius: 3,
-            border:
-              "1px solid #e5e7eb",
+            p: { xs: 2, md: 2.5 },
+            mb: 5,
+            borderRadius: 4,
+            border: "1px solid #E2E8F0",
+            background: "#FFFFFF",
+            boxShadow:
+              "0 10px 35px rgba(15, 23, 42, 0.05)",
           }}
         >
+          <Typography
+            fontWeight={800}
+            sx={{
+              mb: 2,
+              color: "#0F172A",
+            }}
+          >
+            Find Study Material
+          </Typography>
+
           <Grid
             container
             spacing={2}
           >
 
+            {/* SEARCH */}
+
             <Grid
-              item
-              xs={12}
-              md={6}
+              size={{
+                xs: 12,
+                md: 6,
+              }}
             >
               <TextField
                 fullWidth
                 value={search}
                 onChange={(event) =>
-                  setSearch(
-                    event.target.value
-                  )
+                  setSearch(event.target.value)
                 }
                 placeholder="Search title, subject, file..."
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <SearchIcon />
+                      <SearchIcon
+                        sx={{
+                          color: "#2563EB",
+                        }}
+                      />
                     </InputAdornment>
                   ),
+                }}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: 3,
+                    background: "#F8FAFC",
+                    "&:hover fieldset": {
+                      borderColor: "#2563EB",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "#2563EB",
+                      borderWidth: 2,
+                    },
+                  },
                 }}
               />
             </Grid>
 
+            {/* BRANCH */}
+
             <Grid
-              item
-              xs={12}
-              sm={6}
-              md={2}
+              size={{
+                xs: 12,
+                sm: 6,
+                md: 2,
+              }}
             >
               <TextField
                 select
                 fullWidth
-                label="branch"
+                label="Branch"
                 value={branch}
                 onChange={(event) =>
-                  setBranch(
-                    event.target.value
-                  )
+                  setBranch(event.target.value)
                 }
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: 3,
+                    background: "#F8FAFC",
+                  },
+                }}
               >
                 <MenuItem value="">
-                  All
+                  All Branches
                 </MenuItem>
 
                 <MenuItem value="MCA">
@@ -578,11 +671,14 @@ const Note = () => {
               </TextField>
             </Grid>
 
+            {/* SEMESTER */}
+
             <Grid
-              item
-              xs={12}
-              sm={6}
-              md={2}
+              size={{
+                xs: 12,
+                sm: 6,
+                md: 2,
+              }}
             >
               <TextField
                 select
@@ -590,343 +686,467 @@ const Note = () => {
                 label="Semester"
                 value={semester}
                 onChange={(event) =>
-                  setSemester(
-                    event.target.value
-                  )
+                  setSemester(event.target.value)
                 }
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: 3,
+                    background: "#F8FAFC",
+                  },
+                }}
               >
                 <MenuItem value="">
-                  All
+                  All Semesters
                 </MenuItem>
 
-                <MenuItem value="Semester 1">
-                  Semester 1
-                </MenuItem>
-
-                <MenuItem value="Semester 2">
-                  Semester 2
-                </MenuItem>
-
-                <MenuItem value="Semester 3">
-                  Semester 3
-                </MenuItem>
-
-                <MenuItem value="Semester 4">
-                  Semester 4
-                </MenuItem>
-
-                <MenuItem value="Semester 5">
-                  Semester 5
-                </MenuItem>
-
-                <MenuItem value="Semester 6">
-                  Semester 6
-                </MenuItem>
+                {[1, 2, 3, 4, 5, 6].map(
+                  (sem) => (
+                    <MenuItem
+                      key={sem}
+                      value={sem}
+                    >
+                      Semester {sem}
+                    </MenuItem>
+                  )
+                )}
               </TextField>
             </Grid>
 
+            {/* CLEAR */}
+
             <Grid
-              item
-              xs={12}
-              md={2}
+              size={{
+                xs: 12,
+                md: 2,
+              }}
             >
               <Button
                 fullWidth
                 variant="outlined"
-                onClick={
-                  clearFilters
-                }
+                onClick={clearFilters}
                 sx={{
                   height: 56,
-                  textTransform:
-                    "none",
+                  borderRadius: 3,
+                  textTransform: "none",
+                  fontWeight: 700,
+                  borderColor: "#CBD5E1",
+                  color: "#475569",
+
+                  "&:hover": {
+                    borderColor: "#2563EB",
+                    color: "#2563EB",
+                    background: "#EFF6FF",
+                  },
                 }}
               >
-                Clear
+                Clear Filters
               </Button>
             </Grid>
-
           </Grid>
         </Paper>
 
-        {/* TITLE */}
+        {/* =========================
+          DOCUMENT HEADER
+      ========================= */}
 
         <Box
           sx={{
             display: "flex",
-            justifyContent:
-              "space-between",
-            alignItems:
-              "center",
-            mb: 2,
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 3,
           }}
         >
-          <Typography
-            variant="h5"
-            fontWeight={800}
-          >
-            All Documents
-          </Typography>
+          <Box>
+            <Typography
+              variant="h5"
+              fontWeight={900}
+              sx={{
+                color: "#0F172A",
+              }}
+            >
+              All Documents
+            </Typography>
+
+            <Typography
+              variant="body2"
+              sx={{
+                mt: 0.5,
+                color: "#64748B",
+              }}
+            >
+              Browse available study materials
+            </Typography>
+          </Box>
 
           <Chip
             label={`${filteredNotes.length} Notes`}
-            color="primary"
+            sx={{
+              fontWeight: 700,
+              color: "#1D4ED8",
+              background: "#DBEAFE",
+              borderRadius: 2,
+            }}
           />
         </Box>
 
-        {/* NOTE CARDS */}
+        {/* =========================
+          NOTE CARDS
+      ========================= */}
 
         <Grid
           container
           spacing={3}
         >
-          {filteredNotes.map(
-            (note) => (
-              <Grid
-                item
-                xs={12}
-                sm={6}
-                lg={4}
-                key={note.id}
+          {filteredNotes.map((note) => (
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+                lg: 4,
+              }}
+              key={note.id}
+            >
+              <Card
+                sx={{
+                  height: "100%",
+                  borderRadius: 4,
+                  border: "1px solid #E2E8F0",
+                  background: "#FFFFFF",
+                  boxShadow:
+                    "0 5px 20px rgba(15,23,42,0.04)",
+                  transition:
+                    "all 0.25s ease",
+
+                  "&:hover": {
+                    transform:
+                      "translateY(-6px)",
+                    boxShadow:
+                      "0 18px 40px rgba(15,23,42,0.10)",
+                    borderColor:
+                      "#BFDBFE",
+                  },
+                }}
               >
-                <Card
-                  sx={{
-                    height: "100%",
-                    borderRadius: 3,
-                    border:
-                      "1px solid #e5e7eb",
-                    boxShadow: "none",
+                <CardContent sx={{ p: 3 }}>
 
-                    "&:hover": {
-                      transform:
-                        "translateY(-4px)",
-                      boxShadow:
-                        "0 10px 25px rgba(0,0,0,0.08)",
-                    },
-                  }}
-                >
-                  <CardContent>
+                  {/* ICON + TITLE */}
 
-                    {/* TITLE */}
-
-                    <Stack
-                      direction="row"
-                      spacing={2}
-                      alignItems="center"
+                  <Stack
+                    direction="row"
+                    spacing={2}
+                    alignItems="center"
+                    sx={{ mb: 2.5 }}
+                  >
+                    <Box
                       sx={{
-                        mb: 2,
+                        width: 54,
+                        height: 54,
+                        flexShrink: 0,
+                        borderRadius: 3,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        background:
+                          "linear-gradient(135deg, #DBEAFE, #EDE9FE)",
                       }}
                     >
-                      <Box
+                      <MenuBookIcon
                         sx={{
-                          width: 52,
-                          height: 52,
-                          bgcolor:
-                            "#e8f4ff",
-                          borderRadius: 2,
-                          display:
-                            "flex",
-                          alignItems:
-                            "center",
-                          justifyContent:
-                            "center",
+                          fontSize: 28,
+                          color: "#2563EB",
+                        }}
+                      />
+                    </Box>
+
+                    <Box sx={{ minWidth: 0 }}>
+                      <Typography
+                        fontWeight={900}
+                        noWrap
+                        sx={{
+                          color: "#0F172A",
+                          fontSize: "1.05rem",
                         }}
                       >
-                        <MenuBookIcon
-                          sx={{
-                            color:
-                              "#0795e8",
-                          }}
-                        />
-                      </Box>
+                        {note.title}
+                      </Typography>
 
-                      <Box
+                      <Typography
+                        variant="body2"
+                        noWrap
                         sx={{
-                          minWidth: 0,
+                          color: "#64748B",
+                          mt: 0.3,
                         }}
                       >
-                        <Typography
-                          fontWeight={800}
-                          noWrap
-                        >
-                          {
-                            note.title
-                          }
-                        </Typography>
+                        {note.pdfName}
+                      </Typography>
+                    </Box>
+                  </Stack>
 
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          noWrap
-                        >
-                          {
-                            note.fileName
-                          }
-                        </Typography>
-                      </Box>
-                    </Stack>
+                  {/* DESCRIPTION */}
 
-                    {/* DESCRIPTION */}
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "#64748B",
+                      lineHeight: 1.7,
+                      minHeight: 48,
+                      mb: 2.5,
+                    }}
+                  >
+                    {note.description}
+                  </Typography>
 
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
+                  {/* TAGS */}
+
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    flexWrap="wrap"
+                    useFlexGap
+                    sx={{ mb: 2.5 }}
+                  >
+                    <Chip
+                      size="small"
+                      icon={<SchoolIcon />}
+                      label={note.branch}
                       sx={{
-                        minHeight: 45,
-                        mb: 2,
-                      }}
-                    >
-                      {
-                        note.description
-                      }
-                    </Typography>
-
-                    {/* TAGS */}
-
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      flexWrap="wrap"
-                      useFlexGap
-                      sx={{
-                        mb: 2,
-                      }}
-                    >
-                      <Chip
-                        size="small"
-                        icon={
-                          <SchoolIcon />
-                        }
-                        label={
-                          note.department
-                        }
-                      />
-
-                      <Chip
-                        size="small"
-                        label={
-                          note.semester
-                        }
-                      />
-
-                      <Chip
-                        size="small"
-                        label={
-                          note.subject
-                        }
-                      />
-                    </Stack>
-
-                    <Divider
-                      sx={{
-                        mb: 2,
+                        background: "#EFF6FF",
+                        color: "#1D4ED8",
+                        fontWeight: 700,
+                        "& .MuiChip-icon": {
+                          color: "#2563EB",
+                        },
                       }}
                     />
 
-                    {/* DATE */}
-
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
+                    <Chip
+                      size="small"
+                      label={`Semester ${note.semester}`}
                       sx={{
-                        mb: 2,
+                        background: "#F5F3FF",
+                        color: "#6D28D9",
+                        fontWeight: 700,
+                      }}
+                    />
+
+                    <Chip
+                      size="small"
+                      label={note.subject}
+                      sx={{
+                        background: "#ECFDF5",
+                        color: "#047857",
+                        fontWeight: 700,
+                      }}
+                    />
+                  </Stack>
+
+                  <Divider sx={{ mb: 2 }} />
+
+                  {/* META */}
+
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    sx={{ mb: 2.5 }}
+                  >
+                    <Box>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: "#94A3B8",
+                          display: "block",
+                        }}
+                      >
+                        Downloads
+                      </Typography>
+
+                      <Typography
+                        variant="body2"
+                        fontWeight={800}
+                        sx={{
+                          color: "#334155",
+                        }}
+                      >
+                        {note.downloads || 0}
+                      </Typography>
+                    </Box>
+
+                    <Box sx={{ textAlign: "right" }}>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: "#94A3B8",
+                          display: "block",
+                        }}
+                      >
+                        Status
+                      </Typography>
+
+                      <Chip
+                        size="small"
+                        label={note.status || "AVAILABLE"}
+                        sx={{
+                          mt: 0.3,
+                          height: 24,
+                          fontWeight: 700,
+                          background:
+                            note.status === "PENDING"
+                              ? "#FEF3C7"
+                              : "#DCFCE7",
+                          color:
+                            note.status === "PENDING"
+                              ? "#92400E"
+                              : "#166534",
+                        }}
+                      />
+                    </Box>
+                  </Stack>
+
+                  {/* BUTTONS */}
+
+                  <Stack
+                    direction="row"
+                    spacing={1.5}
+                  >
+                    <Button
+                      fullWidth
+                      variant="outlined"
+                      startIcon={
+                        <VisibilityIcon />
+                      }
+                      onClick={() =>
+                        handleView(note)
+                      }
+                      sx={{
+                        height: 44,
+                        borderRadius: 2.5,
+                        textTransform: "none",
+                        fontWeight: 700,
+                        borderColor: "#CBD5E1",
+                        color: "#334155",
+
+                        "&:hover": {
+                          borderColor: "#2563EB",
+                          color: "#2563EB",
+                          background: "#EFF6FF",
+                        },
                       }}
                     >
-                      Uploaded:{" "}
-                      {note.date}
-                    </Typography>
+                      View
+                    </Button>
 
-                    {/* BUTTONS */}
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      startIcon={
+                        <DownloadIcon />
+                      }
+                      onClick={() =>
+                        handleDownload(note)
+                      }
+                      sx={{
+                        height: 44,
+                        borderRadius: 2.5,
+                        textTransform: "none",
+                        fontWeight: 700,
+                        background:
+                          "linear-gradient(135deg, #2563EB, #4F46E5)",
+                        boxShadow:
+                          "0 6px 15px rgba(37,99,235,0.25)",
 
-                    <Stack
-                      direction="row"
-                      spacing={1}
+                        "&:hover": {
+                          background:
+                            "linear-gradient(135deg, #1D4ED8, #4338CA)",
+                          boxShadow:
+                            "0 8px 20px rgba(37,99,235,0.35)",
+                        },
+                      }}
                     >
-                      <Button
-                        fullWidth
-                        variant="outlined"
-                        startIcon={
-                          <VisibilityIcon />
-                        }
-                        onClick={() =>
-                          handleView(
-                            note
-                          )
-                        }
-                        sx={{
-                          textTransform:
-                            "none",
-                        }}
-                      >
-                        View
-                      </Button>
+                      Download
+                    </Button>
+                  </Stack>
 
-                      <Button
-                        fullWidth
-                        variant="contained"
-                        startIcon={
-                          <DownloadIcon />
-                        }
-                        onClick={() =>
-                          handleDownload(
-                            note
-                          )
-                        }
-                        sx={{
-                          bgcolor:
-                            "#0795e8",
-                          textTransform:
-                            "none",
-                        }}
-                      >
-                        Download
-                      </Button>
-                    </Stack>
-
-                  </CardContent>
-                </Card>
-              </Grid>
-            )
-          )}
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
         </Grid>
 
-        {/* EMPTY */}
+        {/* =========================
+          EMPTY STATE
+      ========================= */}
 
-        {filteredNotes.length ===
-          0 && (
-            <Paper
+        {filteredNotes.length === 0 && (
+          <Paper
+            elevation={0}
+            sx={{
+              p: { xs: 4, md: 7 },
+              mt: 3,
+              textAlign: "center",
+              borderRadius: 4,
+              border: "1px solid #E2E8F0",
+              background: "#FFFFFF",
+            }}
+          >
+            <Box
               sx={{
-                p: 6,
-                mt: 3,
-                textAlign:
-                  "center",
-                borderRadius: 3,
+                width: 80,
+                height: 80,
+                mx: "auto",
+                mb: 2,
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "#EFF6FF",
               }}
             >
               <FolderIcon
                 sx={{
-                  fontSize: 60,
-                  color:
-                    "text.secondary",
+                  fontSize: 42,
+                  color: "#2563EB",
                 }}
               />
+            </Box>
 
-              <Typography
-                variant="h6"
-                fontWeight={700}
-              >
-                No documents found
-              </Typography>
+            <Typography
+              variant="h6"
+              fontWeight={900}
+              sx={{
+                color: "#0F172A",
+              }}
+            >
+              No documents found
+            </Typography>
 
-              <Typography
-                color="text.secondary"
-              >
-                Upload a document
-                or change your
-                search.
-              </Typography>
-            </Paper>
-          )}
+            <Typography
+              sx={{
+                mt: 1,
+                color: "#64748B",
+              }}
+            >
+              Try changing your search or filters.
+            </Typography>
+
+            <Button
+              variant="contained"
+              onClick={clearFilters}
+              sx={{
+                mt: 3,
+                borderRadius: 2.5,
+                px: 3,
+                textTransform: "none",
+                fontWeight: 700,
+                background:
+                  "linear-gradient(135deg, #2563EB, #4F46E5)",
+              }}
+            >
+              Clear Filters
+            </Button>
+          </Paper>
+        )}
 
       </Container>
     </Box>
