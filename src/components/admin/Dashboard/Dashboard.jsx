@@ -1,11 +1,12 @@
-
 import React, { useEffect, useState } from "react";
+
 import {
   Box,
   Card,
   CardContent,
   Typography,
   Grid,
+  CircularProgress,
 } from "@mui/material";
 
 import PeopleIcon from "@mui/icons-material/People";
@@ -13,11 +14,9 @@ import DescriptionIcon from "@mui/icons-material/Description";
 import DownloadIcon from "@mui/icons-material/Download";
 import PendingActionsIcon from "@mui/icons-material/PendingActions";
 
-import { BarChart } from "@mui/x-charts/BarChart";
 import { PieChart } from "@mui/x-charts/PieChart";
 
 const Dashboard = () => {
-
   // ==========================================
   // Dashboard State
   // ==========================================
@@ -29,43 +28,188 @@ const Dashboard = () => {
     totalPendingNotes: 0,
   });
 
+  const [loading, setLoading] = useState(true);
+
+  const token = localStorage.getItem("token");
 
   // ==========================================
   // Get Dashboard Data
   // ==========================================
 
   useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
 
-    // Sample data for now
-    // Later replace this with Spring Boot API
+        // ==========================================
+        // API 1 - Get All Students
+        // ==========================================
 
-    const sampleData = {
-      totalUsers: 120,
-      totalNotes: 250,
-      totalDownloads: 1540,
-      totalPendingNotes: 45,
+        const studentsResponse = await fetch(
+          "http://192.168.29.171:8080/api/admin/students",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!studentsResponse.ok) {
+          throw new Error(
+            `Students API Error: ${studentsResponse.status}`
+          );
+        }
+
+        const studentsData = await studentsResponse.json();
+
+        console.log("Students API:", studentsData);
+
+        // ==========================================
+        // API 2 - Get Pending Notes
+        // ==========================================
+
+        const pendingResponse = await fetch(
+          "http://192.168.29.171:8080/api/admin/notes/pending",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!pendingResponse.ok) {
+          throw new Error(
+            `Pending Notes API Error: ${pendingResponse.status}`
+          );
+        }
+
+        const pendingData = await pendingResponse.json();
+
+        console.log("Pending Notes API:", pendingData);
+
+        // ==========================================
+        // API 3 - Get All Approved Notes
+        // ==========================================
+
+        const approvedResponse = await fetch(
+          "http://192.168.29.171:8080/api/notes",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!approvedResponse.ok) {
+          throw new Error(
+            `Approved Notes API Error: ${approvedResponse.status}`
+          );
+        }
+
+        const approvedData = await approvedResponse.json();
+
+        console.log("Approved Notes API:", approvedData);
+
+        // ==========================================
+        // Convert API responses to arrays
+        // ==========================================
+
+        const students = Array.isArray(studentsData)
+          ? studentsData
+          : studentsData.students || studentsData.content || [];
+
+        const pendingNotes = Array.isArray(pendingData)
+          ? pendingData
+          : pendingData.notes ||
+            pendingData.content ||
+            [];
+
+        const approvedNotes = Array.isArray(approvedData)
+          ? approvedData
+          : approvedData.notes ||
+            approvedData.content ||
+            [];
+
+        // ==========================================
+        // Total Users
+        // ==========================================
+
+        const totalUsers = students.length;
+
+        // ==========================================
+        // Total Pending Notes
+        // ==========================================
+
+        const totalPendingNotes = pendingNotes.length;
+
+        // ==========================================
+        // Total Approved Notes
+        // ==========================================
+
+        const totalNotes = approvedNotes.length;
+
+        // ==========================================
+        // Total Downloads
+        // ==========================================
+
+        const totalDownloads = approvedNotes.reduce(
+          (total, note) => {
+            const downloads =
+              Number(note.downloads) ||
+              Number(note.downloadCount) ||
+              0;
+
+            return total + downloads;
+          },
+          0
+        );
+
+        // ==========================================
+        // Set Dashboard Data
+        // ==========================================
+
+        setDashboardData({
+          totalUsers,
+          totalNotes,
+          totalDownloads,
+          totalPendingNotes,
+        });
+
+        console.log("Dashboard Data:", {
+          totalUsers,
+          totalNotes,
+          totalDownloads,
+          totalPendingNotes,
+        });
+      } catch (error) {
+        console.error(
+          "Error fetching dashboard data:",
+          error
+        );
+
+        // Keep dashboard values at zero if API fails
+        setDashboardData({
+          totalUsers: 0,
+          totalNotes: 0,
+          totalDownloads: 0,
+          totalPendingNotes: 0,
+        });
+      } finally {
+        setLoading(false);
+      }
     };
 
-    setDashboardData(sampleData);
-
-  }, []);
-
-
-  // ==========================================
-  // Active Notes
-  // ==========================================
-
-  const totalActiveNotes =
-    dashboardData.totalNotes -
-    dashboardData.totalPendingNotes;
-
+    fetchDashboardData();
+  }, [token]);
 
   // ==========================================
   // Statistics Cards
   // ==========================================
 
   const statistics = [
-
     {
       title: "Total Users",
       value: dashboardData.totalUsers,
@@ -75,7 +219,7 @@ const Dashboard = () => {
     },
 
     {
-      title: "Total Active Notes",
+      title: "Total Approved Notes",
       value: dashboardData.totalNotes,
       icon: <DescriptionIcon />,
       color: "#7C3AED",
@@ -97,12 +241,34 @@ const Dashboard = () => {
       color: "#EA580C",
       lightColor: "#FFF7ED",
     },
-
   ];
 
+  // ==========================================
+  // Loading
+  // ==========================================
+
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          width: "100%",
+          minHeight: "calc(100vh - 64px)",
+          backgroundColor: "#F8FAFC",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  // ==========================================
+  // Dashboard UI
+  // ==========================================
 
   return (
-
     <Box
       sx={{
         width: "100%",
@@ -113,7 +279,6 @@ const Dashboard = () => {
         overflowX: "hidden",
       }}
     >
-
       {/* ==========================================
           Dashboard Header
       ========================================== */}
@@ -123,7 +288,6 @@ const Dashboard = () => {
           mb: 3,
         }}
       >
-
         <Typography
           variant="h4"
           sx={{
@@ -144,9 +308,7 @@ const Dashboard = () => {
         >
           Overview of your Note Sharing Application
         </Typography>
-
       </Box>
-
 
       {/* ==========================================
           Statistics Cards
@@ -159,9 +321,7 @@ const Dashboard = () => {
           width: "100%",
         }}
       >
-
         {statistics.map((item) => (
-
           <Grid
             key={item.title}
             size={{
@@ -170,23 +330,14 @@ const Dashboard = () => {
               md: 3,
             }}
           >
-
             <Card
               elevation={0}
               sx={{
                 height: "100%",
                 borderRadius: 3,
-
                 backgroundColor: "#FFFFFF",
-
                 border: "1px solid #E2E8F0",
-
-                borderTop:
-                  `4px solid ${item.color}`,
-
-                /* ==================================
-                   CARD SHADOW
-                ================================== */
+                borderTop: `4px solid ${item.color}`,
 
                 boxShadow:
                   "0 4px 12px rgba(15, 23, 42, 0.08)",
@@ -195,13 +346,11 @@ const Dashboard = () => {
 
                 "&:hover": {
                   transform: "translateY(-5px)",
-
                   boxShadow:
                     "0 10px 25px rgba(15, 23, 42, 0.14)",
                 },
               }}
             >
-
               <CardContent
                 sx={{
                   p: 3,
@@ -211,7 +360,6 @@ const Dashboard = () => {
                   },
                 }}
               >
-
                 <Box
                   sx={{
                     display: "flex",
@@ -219,11 +367,9 @@ const Dashboard = () => {
                     alignItems: "center",
                   }}
                 >
-
                   {/* Card Text */}
 
                   <Box>
-
                     <Typography
                       variant="body2"
                       sx={{
@@ -245,9 +391,7 @@ const Dashboard = () => {
                     >
                       {item.value.toLocaleString()}
                     </Typography>
-
                   </Box>
-
 
                   {/* Card Icon */}
 
@@ -255,16 +399,13 @@ const Dashboard = () => {
                     sx={{
                       width: 58,
                       height: 58,
-
                       borderRadius: 2.5,
 
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
 
-                      backgroundColor:
-                        item.lightColor,
-
+                      backgroundColor: item.lightColor,
                       color: item.color,
 
                       transition: "all 0.3s ease",
@@ -274,27 +415,18 @@ const Dashboard = () => {
                       },
                     }}
                   >
-
                     {React.cloneElement(item.icon, {
                       sx: {
                         fontSize: 30,
                       },
                     })}
-
                   </Box>
-
                 </Box>
-
               </CardContent>
-
             </Card>
-
           </Grid>
-
         ))}
-
       </Grid>
-
 
       {/* ==========================================
           Circular Statistics Graph
@@ -304,18 +436,11 @@ const Dashboard = () => {
         elevation={0}
         sx={{
           mt: 3,
-
           width: "100%",
-
           borderRadius: 3,
 
           backgroundColor: "#FFFFFF",
-
           border: "1px solid #E2E8F0",
-
-          /* ======================================
-             CIRCULAR GRAPH BOX SHADOW
-          ====================================== */
 
           boxShadow:
             "0 4px 12px rgba(15, 23, 42, 0.08)",
@@ -328,7 +453,6 @@ const Dashboard = () => {
           },
         }}
       >
-
         <CardContent
           sx={{
             p: 3,
@@ -338,7 +462,6 @@ const Dashboard = () => {
             },
           }}
         >
-
           {/* Circular Graph Header */}
 
           <Box
@@ -346,7 +469,6 @@ const Dashboard = () => {
               mb: 2,
             }}
           >
-
             <Typography
               variant="h6"
               sx={{
@@ -364,47 +486,37 @@ const Dashboard = () => {
                 mt: 0.5,
               }}
             >
-              Users, active notes and pending notes overview
+              Users, approved notes and pending notes overview
             </Typography>
-
           </Box>
-
 
           {/* Circular Graph */}
 
           <Box
             sx={{
               width: "100%",
-
               display: "flex",
-
               justifyContent: "center",
-
               alignItems: "center",
-
               overflow: "hidden",
-
               height: "300px",
             }}
           >
-
             <PieChart
               series={[
                 {
                   data: [
-
                     {
                       id: 0,
-                      value:
-                        dashboardData.totalUsers,
+                      value: dashboardData.totalUsers,
                       label: "Total Users",
                       color: "#2563EB",
                     },
 
                     {
                       id: 1,
-                      value: totalActiveNotes,
-                      label: "Active Notes",
+                      value: dashboardData.totalNotes,
+                      label: "Approved Notes",
                       color: "#059669",
                     },
 
@@ -415,15 +527,11 @@ const Dashboard = () => {
                       label: "Pending Notes",
                       color: "#EA580C",
                     },
-
                   ],
 
                   innerRadius: 65,
-
                   outerRadius: 105,
-
                   paddingAngle: 3,
-
                   cornerRadius: 6,
 
                   highlightScope: {
@@ -432,11 +540,8 @@ const Dashboard = () => {
                   },
                 },
               ]}
-
               width={500}
-
               height={280}
-
               slotProps={{
                 legend: {
                   direction: "column",
@@ -450,16 +555,11 @@ const Dashboard = () => {
                 },
               }}
             />
-
           </Box>
-
         </CardContent>
-
       </Card>
-
     </Box>
   );
 };
 
 export default Dashboard;
-
