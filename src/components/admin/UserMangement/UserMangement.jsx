@@ -128,7 +128,89 @@ const UserMangement = () => {
   // ==========================================
   // VIEW PARTICULAR STUDENT NOTES
   // ==========================================
+  const handleDeleteNote = async (noteId) => {
+    console.log("niteid is ",noteId);
+    
 
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this note?"
+    );
+
+    if (!confirmDelete) {
+      return;
+    }
+
+    try {
+
+      const token = localStorage.getItem("token");
+      console.log("delete token : ",token);
+      
+
+      const response = await fetch(
+        `http://192.168.29.171:8080/api/admin/notes/${noteId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `Delete failed: ${response.status}`
+        );
+      }
+
+      // Remove from currently opened modal
+      setStudentNotes((previousNotes) =>
+        previousNotes.filter(
+          (note) => note.id !== noteId
+        )
+      );
+
+      // Also update users state
+      setUsers((previousUsers) =>
+        previousUsers.map((user) => {
+
+          if (user.id === selectedStudent?.id) {
+
+            return {
+              ...user,
+
+              notes: Array.isArray(user.notes)
+                ? user.notes.filter(
+                  (note) => note.id !== noteId
+                )
+                : [],
+            };
+          }
+
+          return user;
+        })
+      );
+
+      setSnackbar({
+        open: true,
+        message: "Note deleted successfully.",
+        severity: "success",
+      });
+
+    } catch (error) {
+
+      console.error(
+        "Delete note error:",
+        error
+      );
+
+      setSnackbar({
+        open: true,
+        message: "Failed to delete note.",
+        severity: "error",
+      });
+    }
+  };
   const handleViewNotes = (student) => {
     console.log(
       "Selected student:",
@@ -304,7 +386,7 @@ const UserMangement = () => {
         message: "user delete successfully.",
         severity: "success",
       });
-      
+
 
 
       // alert("Student deleted successfully.");
@@ -523,8 +605,7 @@ const UserMangement = () => {
         <DialogTitle
           sx={{
             display: "flex",
-            justifyContent:
-              "space-between",
+            justifyContent: "space-between",
             alignItems: "center",
           }}
         >
@@ -552,9 +633,7 @@ const UserMangement = () => {
           </Box>
 
           <IconButton
-            onClick={
-              handleCloseNotesDialog
-            }
+            onClick={handleCloseNotesDialog}
           >
             <CloseIcon />
           </IconButton>
@@ -594,129 +673,132 @@ const UserMangement = () => {
             </Box>
           ) : (
             <Stack spacing={2}>
-              {studentNotes.map(
-                (note) => (
-                  <Paper
-                    key={note.id}
-                    elevation={2}
+              {studentNotes.map((note) => (
+                <Paper
+                  key={note.id}
+                  elevation={2}
+                  sx={{
+                    p: 2,
+                  }}
+                >
+                  <Box
                     sx={{
-                      p: 2,
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
+                      gap: 2,
                     }}
                   >
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent:
-                          "space-between",
-                        alignItems:
-                          "flex-start",
-                        gap: 2,
-                      }}
-                    >
-                      {/* ==========================
-                          NOTE INFORMATION
-                      ========================== */}
+
+                    {/* NOTE INFORMATION */}
+
+                    <Box sx={{ flex: 1 }}>
+
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: 600,
+                        }}
+                      >
+                        {note.title}
+                      </Typography>
+
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ mt: 1 }}
+                      >
+                        {note.description}
+                      </Typography>
 
                       <Box
                         sx={{
-                          flex: 1,
+                          display: "flex",
+                          gap: 1,
+                          flexWrap: "wrap",
+                          mt: 1.5,
                         }}
                       >
-                        <Typography
-                          variant="h6"
-                          sx={{
-                            fontWeight: 600,
-                          }}
-                        >
-                          {note.title}
-                        </Typography>
+                        <Chip
+                          label={`Subject: ${note.subject}`}
+                          size="small"
+                        />
 
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{
-                            mt: 1,
-                          }}
-                        >
-                          {
-                            note.description
-                          }
-                        </Typography>
+                        <Chip
+                          label={`Semester: ${note.semester}`}
+                          size="small"
+                        />
 
-                        <Box
-                          sx={{
-                            display: "flex",
-                            gap: 1,
-                            flexWrap:
-                              "wrap",
-                            mt: 1.5,
-                          }}
-                        >
-                          <Chip
-                            label={`Subject: ${note.subject}`}
-                            size="small"
-                          />
+                        <Chip
+                          label={`Branch: ${note.branch}`}
+                          size="small"
+                        />
 
-                          <Chip
-                            label={`Semester: ${note.semester}`}
-                            size="small"
-                          />
+                        <Chip
+                          label={`Downloads: ${note.downloads}`}
+                          size="small"
+                        />
 
-                          <Chip
-                            label={`Branch: ${note.branch}`}
-                            size="small"
-                          />
-
-                          <Chip
-                            label={`Downloads: ${note.downloads}`}
-                            size="small"
-                          />
-
-                          <Chip
-                            label={note.status}
-                            size="small"
-                            color={getStatusColor(
-                              note.status
-                            )}
-                          />
-                        </Box>
-
-                        {/* PDF NAME */}
-
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            mt: 1.5,
-                            wordBreak:
-                              "break-all",
-                          }}
-                        >
-                          <strong>
-                            PDF:
-                          </strong>{" "}
-                          {note.pdfName}
-                        </Typography>
+                        <Chip
+                          label={note.status}
+                          size="small"
+                          color={getStatusColor(note.status)}
+                        />
                       </Box>
 
-                      {/* ==========================
-                          VIEW PDF BUTTON
-                      ========================== */}
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          mt: 1.5,
+                          wordBreak: "break-all",
+                        }}
+                      >
+                        <strong>PDF:</strong>{" "}
+                        {note.pdfName}
+                      </Typography>
+
+                    </Box>
+
+                    {/* =================================
+          NOTE ACTION BUTTONS
+      ================================= */}
+
+                    <Stack
+                      direction="row"
+                      spacing={1}
+                      sx={{
+                        flexShrink: 0,
+                      }}
+                    >
+
+                      {/* VIEW PDF */}
 
                       <Button
                         variant="outlined"
-                        startIcon={
-                          <PictureAsPdfIcon />
-                        }
-                        onClick={() =>
-                          handleView(note)
-                        }
+                        startIcon={<PictureAsPdfIcon />}
+                        onClick={() => handleView(note)}
                       >
                         View PDF
                       </Button>
-                    </Box>
-                  </Paper>
-                )
-              )}
+
+                      {/* DELETE NOTE */}
+
+                      <Button
+                        variant="contained"
+                        color="error"
+                        startIcon={<DeleteIcon />}
+                        onClick={() =>
+                          handleDeleteNote(note.id)
+                        }
+                      >
+                        Delete
+                      </Button>
+
+                    </Stack>
+
+                  </Box>
+                </Paper>
+              ))}
             </Stack>
           )}
         </DialogContent>
