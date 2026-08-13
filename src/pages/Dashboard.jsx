@@ -54,9 +54,7 @@ const Dashboard = () => {
   const [bookmarked, setBookmarked] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
 
-  // =====================================================
-  // ONLY APPROVED NOTES
-  // =====================================================
+ 
 
   const navigate = useNavigate();
   const loadNotes = async () => {
@@ -103,9 +101,7 @@ const Dashboard = () => {
     );
   }, [notes]);
 
-  // =====================================================
-  // FILTER NOTES
-  // =====================================================
+  
 
   const filteredNotes = useMemo(() => {
     const searchText = search
@@ -153,9 +149,7 @@ const Dashboard = () => {
     semester,
   ]);
 
-  // =====================================================
-  // TOTAL DOWNLOADS
-  // =====================================================
+
 
   const totalDownloads = useMemo(() => {
     return approvedNotes.reduce(
@@ -166,9 +160,7 @@ const Dashboard = () => {
     );
   }, [approvedNotes]);
 
-  // =====================================================
-  // ACTIVE CONTRIBUTORS
-  // =====================================================
+
 
   const activeContributors = useMemo(() => {
     return new Set(
@@ -181,9 +173,7 @@ const Dashboard = () => {
     ).size;
   }, [approvedNotes]);
 
-  // =====================================================
-  // POPULAR NOTES
-  // =====================================================
+
 
   const popularNotes = useMemo(() => {
     return [...approvedNotes]
@@ -195,9 +185,7 @@ const Dashboard = () => {
       .slice(0, 3);
   }, [approvedNotes]);
 
-  // =====================================================
-  // BOOKMARK
-  // =====================================================
+
 
   const toggleBookmark = (id) => {
     setBookmarked((previous) => {
@@ -211,9 +199,7 @@ const Dashboard = () => {
     });
   };
 
-  // =====================================================
-  // VIEW PDF
-  // =====================================================
+  
 
   const handleView = async (note) => {
     try {
@@ -254,9 +240,7 @@ const Dashboard = () => {
     }
   };
 
-  // =====================================================
-  // DOWNLOAD PDF
-  // =====================================================
+
 
   const handleDownload = async (
     note
@@ -346,9 +330,7 @@ const Dashboard = () => {
     }
   };
 
-  // =====================================================
-  // CLEAR FILTER
-  // =====================================================
+
 
   const clearFilters = () => {
     setSearch("");
@@ -371,9 +353,7 @@ const handleLogout = () => {
   window.location.href = "/";
 };
 
-  // =====================================================
-  // UI
-  // =====================================================
+
 
   return (
     <Box
