@@ -33,6 +33,7 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
+import Chatbot from "../components/chatbot/Chatbot";
 
 const SIDEBAR_WIDTH = 240;
 
@@ -743,6 +744,7 @@ const StudentDashboard = () => {
         </Box>
 
       </Box>
+       <Chatbot/>
     </Box>
   );
 };

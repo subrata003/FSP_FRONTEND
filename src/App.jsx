@@ -17,7 +17,7 @@ import Dashboard from "./pages/Dashboard";
 import Note from "./pages/Note";
 import Upload from "./pages/Upload";
 import Profile from "./pages/Profile";
-import Chatbot from "./components/chatbot/Chatbot";
+// import Chatbot from "./components/chatbot/Chatbot";
 
 // ==========================================
 // PROTECTED ROUTE
@@ -202,7 +202,7 @@ const App = () => {
       />
 
     </Routes>
-     <Chatbot/>
+    
     </>
   );
 };
