@@ -186,7 +186,7 @@ const Loginpage = () => {
       console.log("log 1");
 
       const response = await fetch(
-        "http://localhost:8080/api/auth/register",
+        "http://192.168.29.171:8080/api/auth/register",
         {
           method: "POST",
 

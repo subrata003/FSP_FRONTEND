@@ -214,7 +214,7 @@ const Upload = () => {
       // ============================
 
       const response = await fetch(
-        "http://localhost:8080/api/notes/upload",
+        "http://192.168.29.171:8080/api/notes/upload",
         {
           method: "POST",
 

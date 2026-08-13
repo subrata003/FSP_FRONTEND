@@ -51,7 +51,7 @@ const Note = () => {
         }
 
         const response = await fetch(
-          "http://localhost:8080/api/notes/my-notes",
+          "http://192.168.29.171:8080/api/notes/my-notes",
           {
             method: "GET",
             headers: {
@@ -138,7 +138,7 @@ const Note = () => {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        `http://localhost:8080/api/notes/file/${note.id}`,
+        `http://192.168.29.171:8080/api/notes/file/${note.id}`,
         {
           method: "GET",
           headers: {
@@ -180,7 +180,7 @@ const Note = () => {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        `http://localhost:8080/api/notes/${note.id}/download`,
+        `http://192.168.29.171:8080/api/notes/${note.id}/download`,
         {
           method: "GET",
           headers: {
