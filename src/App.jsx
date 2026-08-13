@@ -1,36 +1,42 @@
 import React from "react";
-
 import {
   Routes,
   Route,
   Navigate,
 } from "react-router-dom";
 
+// ==========================================
+// PAGES / COMPONENTS
+// ==========================================
+
 import Loginpage from "./components/Loginpage";
+import AdminPanel from "./components/admin/AdminPanel/AdminPanel";
 
-// import AdminPanel from "./components/AdminPanel";
-import AdminPanel from "./components/admin/AdminPanel/AdminPanel"
-
-// import ProtectedRoute from "./components/ProtectedRoute";
-import Note from "./pages/Note";
+import StudentDashboard from "./pages/StudentDashboard";
 import Dashboard from "./pages/Dashboard";
-import Upload from "./pages/Upload"
-import Profile from "./pages/Profile"
-import StudentDashboard from "./pages/StudentDashboard"
-
+import Note from "./pages/Note";
+import Upload from "./pages/Upload";
+import Profile from "./pages/Profile";
 
 // ==========================================
 // PROTECTED ROUTE
 // ==========================================
 
 const ProtectedRoute = ({ children, role }) => {
-
   const token = localStorage.getItem("token");
 
-  const loggedUser = JSON.parse(
-    localStorage.getItem("loggedUser") || "null"
-  );
+  let loggedUser = null;
 
+  try {
+    loggedUser = JSON.parse(
+      localStorage.getItem("loggedUser") || "null"
+    );
+  } catch (error) {
+    console.error(
+      "Invalid loggedUser data:",
+      error
+    );
+  }
 
   // ==========================================
   // NOT LOGGED IN
@@ -45,16 +51,15 @@ const ProtectedRoute = ({ children, role }) => {
     );
   }
 
-
   // ==========================================
-  // WRONG ROLE
+  // ROLE CHECK
   // ==========================================
 
   if (
     role &&
     loggedUser.role !== role
   ) {
-
+    // Admin trying to access student route
     if (loggedUser.role === "admin") {
       return (
         <Navigate
@@ -64,6 +69,7 @@ const ProtectedRoute = ({ children, role }) => {
       );
     }
 
+    // Student trying to access admin route
     if (loggedUser.role === "student") {
       return (
         <Navigate
@@ -81,22 +87,18 @@ const ProtectedRoute = ({ children, role }) => {
     );
   }
 
-
   // ==========================================
-  // ALLOW ACCESS
+  // ACCESS ALLOWED
   // ==========================================
 
   return children;
 };
-
 
 // ==========================================
 // APP
 // ==========================================
 
 const App = () => {
-
-
   return (
     <Routes>
 
@@ -106,9 +108,10 @@ const App = () => {
 
       <Route
         path="/"
-        element={<Loginpage />}
+        element={
+          <Loginpage />
+        }
       />
-
 
       {/* =================================
           ADMIN
@@ -123,7 +126,6 @@ const App = () => {
         }
       />
 
-
       {/* =================================
           STUDENT DASHBOARD
       ================================== */}
@@ -136,228 +138,56 @@ const App = () => {
           </ProtectedRoute>
         }
       >
-        {/* Dashboard */}
+
+        {/* ================================
+            STUDENT DASHBOARD HOME
+        ================================= */}
+
         <Route
           index
-          element={<Dashboard />}
+          element={
+            <Dashboard />
+          }
         />
 
-        {/* Notes */}
+        {/* ================================
+            STUDENT NOTE MANAGEMENT
+        ================================= */}
+
         <Route
           path="notes"
-          element={<Note />}
+          element={
+            <Note />
+          }
         />
 
-        {/* Upload */}
+        {/* ================================
+            STUDENT UPLOAD
+        ================================= */}
+
         <Route
           path="upload"
-          element={<Upload />}
+          element={
+            <Upload />
+          }
         />
 
-        {/* Profile */}
+        {/* ================================
+            STUDENT PROFILE
+        ================================= */}
+
         <Route
           path="profile"
-          element={<Profile />}
+          element={
+            <Profile />
+          }
         />
+
       </Route>
 
-
-      {/* ================================
-      STUDENT NOTES
-  ================================= */}
-
-
-
-
-    </Routes>
-  );
-};
-
-
-
-
-
-import {
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
-
-import Loginpage from "./components/Loginpage";
-// import AdminDashboard from "./components/AdminDashboard";
-import AdminPanel from "./components/admin/AdminPanel/AdminPanel"
-
-
-import StudentDashboard from "./pages/StudentDashboard";
-import Upload from "./pages/Upload";
-import Profile from "./pages/Profile";
-
-
-// ==========================================
-// PROTECTED ROUTE
-// ==========================================
-
-const ProtectedRoute = ({ children, role }) => {
-
-  const token = localStorage.getItem("token");
-
-  const loggedUser = JSON.parse(
-    localStorage.getItem("loggedUser") || "null"
-  );
-
-
-  // ==========================================
-  // NOT LOGGED IN
-  // ==========================================
-
-  if (!token || !loggedUser) {
-    return (
-      <Navigate
-        to="/"
-        replace
-      />
-    );
-  }
-
-
-  // ==========================================
-  // WRONG ROLE
-  // ==========================================
-
-  if (
-    role &&
-    loggedUser.role !== role
-  ) {
-
-    if (loggedUser.role === "admin") {
-      return (
-        <Navigate
-          to="/admin"
-          replace
-        />
-      );
-    }
-
-    if (loggedUser.role === "student") {
-      return (
-        <Navigate
-          to="/student"
-          replace
-        />
-      );
-    }
-
-    return (
-      <Navigate
-        to="/"
-        replace
-      />
-    );
-  }
-
-
-  // ==========================================
-  // ALLOW ACCESS
-  // ==========================================
-
-  return children;
-};
-
-
-// ==========================================
-// APP
-// ==========================================
-
-const App = () => {
-
-  return (
-    <Routes>
-
-      {/* ================================
-          LOGIN
-      ================================= */}
-
-      <Route
-        path="/"
-        element={
-          <Loginpage />
-        }
-      />
-
-
-      {/* ================================
-          ADMIN DASHBOARD
-      ================================= */}
-
-      <Route
-        path="/admin"
-        element={
-          <ProtectedRoute role="admin">
-            < AdminPanel/>
-          </ProtectedRoute>
-        }
-      />
-
-
-      {/* ================================
-          STUDENT DASHBOARD
-      ================================= */}
-
-      <Route
-        path="/student"
-        element={
-          <ProtectedRoute role="student">
-            <StudentDashboard />
-          </ProtectedRoute>
-        }
-      />
-
-
-      {/* ================================
-          STUDENT NOTE MANAGEMENT
-      ================================= */}
-
-      <Route
-        path="/student-dashboard/notes"
-        element={
-          <ProtectedRoute role="student">
-            <Upload />
-          </ProtectedRoute>
-        }
-      />
-
-
-      {/* ================================
-          PROFILE
-      ================================= */}
-
-      <Route
-        path="/profile"
-        element={
-          <ProtectedRoute>
-            <Profile />
-          </ProtectedRoute>
-        }
-      />
-
-
-      {/* ================================
-          OLD STUDENT PROFILE URL
-      ================================= */}
-
-      <Route
-        path="/student-dashboard/profile"
-        element={
-          <ProtectedRoute role="student">
-            <Profile />
-          </ProtectedRoute>
-        }
-      />
-
-
-      {/* ================================
+      {/* =================================
           UNKNOWN URL
-      ================================= */}
+      ================================== */}
 
       <Route
         path="*"
@@ -372,6 +202,5 @@ const App = () => {
     </Routes>
   );
 };
-
 
 export default App;
