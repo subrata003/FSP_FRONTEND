@@ -30,10 +30,17 @@ import {
 import Dashboard from "../Dashboard/Dashboard";
 import UserMangement from "../UserMangement/UserMangement";
 import NoteManagement from "../NoteManagement/NoteManagement";
+import { useNavigate } from "react-router-dom";
+// import { useAuth } from "../context/AuthContext";
 
 const drawerWidth = 240;
 
 const AdminPanel = () => {
+    const navigate = useNavigate();
+     const token = localStorage.getItem("token");
+     console.log("Token is",token)
+
+    // const { setUser } = useAuth();
 
     const [mobileOpen, setMobileOpen] = useState(false);
     const [activePage, setActivePage] = useState("dashboard");
@@ -61,10 +68,13 @@ const AdminPanel = () => {
     };
 
     // Logout
-    const handleLogout = () => {
-        setAnchorEl(null);
-        console.log("Admin Logout");
-    };
+   const handleLogout = async () => {
+
+      console.log("1. Logout button clicked");
+       localStorage.removeItem("token");
+         navigate("/");
+    
+};
 
     // ==========================================
     // Render selected page

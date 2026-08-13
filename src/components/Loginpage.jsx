@@ -24,7 +24,7 @@ import {
 
 import { useNavigate } from "react-router-dom";
 
-const API_URL = "http://localhost:8080";
+const API_URL = "http://192.168.29.171:8080";
 
 const Loginpage = () => {
   const navigate = useNavigate();
